@@ -52,6 +52,7 @@ This library uses one similar technique - if you want to have a space within a t
 
 This library automatically adds white space after tags.
 If you don't want white space, you point it out with a '>' character.
+This idea is loosly based on "whitespace alligators" from HAML.
 
 ``` html
 <p>
