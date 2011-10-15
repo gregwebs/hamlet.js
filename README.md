@@ -1,7 +1,16 @@
-# * Hamlet Html Templates for javascript
+# Hamlet Html Templates for javascript
 
 This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/templates) template language.
-There are less features right now, and just a single #{} interpolation for javascript
+There are less features, including just a single #{} to eval javascript
+
+## Functions exposed:
+* Hamlet - compile the template and evaluate the javascript
+
+For faster execution, first turn your template into regular html just once with
+* HamletToHtml
+
+Then execute the template with:
+* HamletInterpolate - eval javascript from
 
 # Testing
 
