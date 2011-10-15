@@ -14,58 +14,87 @@ this.HamletInterpolate = (html) ->
 this.HamletToHtml = (html) ->
   content = []
   tag_stack = []
-  last_indent = 0
+  last_tag_indent = 0
+  needs_space = false
 
-  for line in html.split(/[\n\r]+/)
+  push_innerHTML = (str) ->
+    if (i = lastIndexOf(str, '#')) && str[i + 1] != '{'
+      str = str.substring(0, i)
+
+    needs_space = true
+    content.push(str)
+
+  for line in html.split(/\n\r*/)
     pos = 0
     pos += 1 while line[pos] == ' '
     unindented = line.substring(pos)
 
-    if unindented[0] != '<'
-      content.push(unindented)
+    if unindented.length == 0
+      content.push(' ')
+
+    else if unindented[0] == '#'
 
     else
-      if pos <= last_indent
-        while tag_stack.length > 0 and (!oldp or pos < oldp)
+      if pos <= last_tag_indent
+        if tag_stack.length > 0 and pos == last_tag_indent
           [oldp, oldt] = tag_stack.pop()
+          last_tag_indent = tag_stack[tag_stack.length - 1]?[0] || 0
           content.push("</#{oldt}>")
 
-      innerHTML = ""
-      tag_portion = unindented.substring(1)
-      if (ti = unindented.indexOf('>')) != -1
-        tag_portion = unindented.substring(1, ti)
-        if tag_portion[tag_portion.length] == "/"
-          tag_portion = tag_portion.substring(innerHTML.length - 1)
-        innerHTML = unindented.substring(ti + 1)
+        while tag_stack.length > 0 and pos < last_tag_indent
+          needs_space = false
+          [oldp, oldt] = tag_stack.pop()
+          last_tag_indent = tag_stack[tag_stack.length - 1]?[0] || 0
+          content.push("</#{oldt}>")
 
-      tag_attrs = ""
-      tag_name = tag_portion
-      if (si = tag_portion.indexOf(' ')) != -1
-        tag_name = tag_portion.substring(0, si)
-        tag_attrs = tag_portion.substring(si)
+      if unindented[0] == '>'
+        unindented = unindented.substring(1)
+        needs_space = false
 
-      if tag_name[0] == '#'
-        tag_attrs = "id=" + tag_name.substring(1) + tag_attrs
-        tag_name = "div"
-      if tag_name[0] == '.'
-        tag_attrs = "class=" + tag_name.substring(1) + tag_attrs
-        tag_name = "div"
+      content.push(" ") if needs_space
+      needs_space = false
 
-      if emptyTags[tag_name]
-        content.push("<#{tag_name}/>")
+      if unindented[0] != '<'
+        push_innerHTML(unindented)
+
       else
-        tag_stack.push([pos, tag_name])
+        last_tag_indent = pos
 
-        if tag_attrs.length == 0
-          content.push( "<#{tag_name}>")
+        innerHTML = ""
+        tag_portion = unindented.substring(1)
+        if ti = indexOf(unindented, '>')
+          tag_portion = unindented.substring(1, ti)
+          if tag_portion[tag_portion.length] == "/"
+            tag_portion = tag_portion.substring(innerHTML.length - 1)
+          innerHTML = unindented.substring(ti + 1)
+
+        tag_attrs = ""
+        tag_name = tag_portion
+        if si = indexOf(tag_portion, ' ')
+          tag_name = tag_portion.substring(0, si)
+          tag_attrs = tag_portion.substring(si)
+
+        if tag_name[0] == '#'
+          tag_attrs = "id=" + tag_name.substring(1) + tag_attrs
+          tag_name = "div"
+        if tag_name[0] == '.'
+          tag_attrs = "class=" + tag_name.substring(1) + tag_attrs
+          tag_name = "div"
+
+        if emptyTags[tag_name]
+          content.push("<#{tag_name}/>")
         else
-          content.push( "<#{tag_name}" +
-            join_attrs(parse_attrs(tag_attrs)) + ">"
-          )
+          tag_stack.push([last_tag_indent, tag_name])
 
-        content.push(innerHTML) unless innerHTML.length == 0
+          if tag_attrs.length == 0
+            content.push( "<#{tag_name}>")
+          else
+            content.push( "<#{tag_name}" +
+              join_attrs(parse_attrs(tag_attrs)) + ">"
+            )
 
-    last_indent = pos
+          unless innerHTML.length == 0
+            push_innerHTML(innerHTML)
 
   while tag_stack.length > 0
     [oldp, oldt] = tag_stack.pop()
@@ -73,6 +102,14 @@ this.HamletToHtml = (html) ->
 
   content.join("")
 
+
+indexOf = (str, substr) ->
+  i = str.indexOf(substr)
+  if i == -1 then null else i
+
+lastIndexOf = (str, substr) ->
+  i = str.lastIndexOf(substr)
+  if i == -1 then null else i
 
 makeMap = (str) ->
     obj = {}
@@ -122,19 +159,19 @@ join_attrs = (attrs) ->
     " " + attr[0] + '="' + attr[1] + '"'
 
 
-# tests
+### tests ###
 
 t = (a, b) =>
-  h = this.HamletToHtml(b)
+  h = this.HamletToHtml(b).replace(/\n/g, " ")
   if a != h
     console.log("from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h)
 
 t("<div></div>", "<div>")
 t('<span>#{foo}</span>', '<span>#{foo}')
 
-t "<p class=\"foo\"><div id=\"bar\">baz</div></p>", """
+t '<p class="foo"><div id="bar">baz </div></p>', """
 <p .foo>
-  <#bar>baz
+  <#bar>baz # this is a comment
 """
 
 t '<p class="foo.bar"><div id="bar">baz</div></p>', """
@@ -142,9 +179,33 @@ t '<p class="foo.bar"><div id="bar">baz</div></p>', """
   <#bar>baz
 """
 
+t "<div>foo bar</div>", """
+<div>
+  foo
+  bar
+"""
+
+t "<div>foo<span>bar</span></div>", """
+<div>
+  foo
+  ><span>bar
+"""
+
+t '<p>You are logged in as <i>Michael</i> <b>Snoyman</b>, <a href="/logout">logout</a>.</p><p>Multi line paragraph.</p>', """
+<p>You are logged in as
+  <i>Michael
+  <b>Snoyman
+  >,
+  <a href="/logout">logout
+  >.
+><p>Multi
+  line
+  paragraph.
+"""
+
 interp = =>
   foo = "bar"
-  itp = @Hamlet("#{foo}")
+  itp = @HamletInterpolate("#{foo}")
   unless "bar" == itp
     console.log(itp)
 

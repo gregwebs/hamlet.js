@@ -1,4 +1,4 @@
-var attrMatch, emptyTags, fillAttrs, interp, join_attrs, makeMap, parse_attrs, t;
+var attrMatch, emptyTags, fillAttrs, indexOf, interp, join_attrs, lastIndexOf, makeMap, parse_attrs, t;
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 this.Hamlet = function(html) {
   return this.HamletInterpolate(this.HamletToHtml(html));
@@ -9,11 +9,20 @@ this.HamletInterpolate = function(html) {
   });
 };
 this.HamletToHtml = function(html) {
-  var content, innerHTML, last_indent, line, oldp, oldt, pos, si, tag_attrs, tag_name, tag_portion, tag_stack, ti, unindented, _i, _len, _ref, _ref2, _ref3;
+  var content, innerHTML, last_tag_indent, line, needs_space, oldp, oldt, pos, push_innerHTML, si, tag_attrs, tag_name, tag_portion, tag_stack, ti, unindented, _i, _len, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
   content = [];
   tag_stack = [];
-  last_indent = 0;
-  _ref = html.split(/[\n\r]+/);
+  last_tag_indent = 0;
+  needs_space = false;
+  push_innerHTML = function(str) {
+    var i;
+    if ((i = lastIndexOf(str, '#')) && str[i + 1] !== '{') {
+      str = str.substring(0, i);
+    }
+    needs_space = true;
+    return content.push(str);
+  };
+  _ref = html.split(/\n\r*/);
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     line = _ref[_i];
     pos = 0;
@@ -21,59 +30,96 @@ this.HamletToHtml = function(html) {
       pos += 1;
     }
     unindented = line.substring(pos);
-    if (unindented[0] !== '<') {
-      content.push(unindented);
-    } else {
-      if (pos <= last_indent) {
-        while (tag_stack.length > 0 && (!oldp || pos < oldp)) {
+    if (unindented.length === 0) {
+      content.push(' ');
+    } else if (unindented[0] === '#') {} else {
+      if (pos <= last_tag_indent) {
+        if (tag_stack.length > 0 && pos === last_tag_indent) {
           _ref2 = tag_stack.pop(), oldp = _ref2[0], oldt = _ref2[1];
+          last_tag_indent = ((_ref3 = tag_stack[tag_stack.length - 1]) != null ? _ref3[0] : void 0) || 0;
+          content.push("</" + oldt + ">");
+        }
+        while (tag_stack.length > 0 && pos < last_tag_indent) {
+          needs_space = false;
+          _ref4 = tag_stack.pop(), oldp = _ref4[0], oldt = _ref4[1];
+          last_tag_indent = ((_ref5 = tag_stack[tag_stack.length - 1]) != null ? _ref5[0] : void 0) || 0;
           content.push("</" + oldt + ">");
         }
       }
-      innerHTML = "";
-      tag_portion = unindented.substring(1);
-      if ((ti = unindented.indexOf('>')) !== -1) {
-        tag_portion = unindented.substring(1, ti);
-        if (tag_portion[tag_portion.length] === "/") {
-          tag_portion = tag_portion.substring(innerHTML.length - 1);
-        }
-        innerHTML = unindented.substring(ti + 1);
+      if (unindented[0] === '>') {
+        unindented = unindented.substring(1);
+        needs_space = false;
       }
-      tag_attrs = "";
-      tag_name = tag_portion;
-      if ((si = tag_portion.indexOf(' ')) !== -1) {
-        tag_name = tag_portion.substring(0, si);
-        tag_attrs = tag_portion.substring(si);
+      if (needs_space) {
+        content.push(" ");
       }
-      if (tag_name[0] === '#') {
-        tag_attrs = "id=" + tag_name.substring(1) + tag_attrs;
-        tag_name = "div";
-      }
-      if (tag_name[0] === '.') {
-        tag_attrs = "class=" + tag_name.substring(1) + tag_attrs;
-        tag_name = "div";
-      }
-      if (emptyTags[tag_name]) {
-        content.push("<" + tag_name + "/>");
+      needs_space = false;
+      if (unindented[0] !== '<') {
+        push_innerHTML(unindented);
       } else {
-        tag_stack.push([pos, tag_name]);
-        if (tag_attrs.length === 0) {
-          content.push("<" + tag_name + ">");
-        } else {
-          content.push(("<" + tag_name) + join_attrs(parse_attrs(tag_attrs)) + ">");
+        last_tag_indent = pos;
+        innerHTML = "";
+        tag_portion = unindented.substring(1);
+        if (ti = indexOf(unindented, '>')) {
+          tag_portion = unindented.substring(1, ti);
+          if (tag_portion[tag_portion.length] === "/") {
+            tag_portion = tag_portion.substring(innerHTML.length - 1);
+          }
+          innerHTML = unindented.substring(ti + 1);
         }
-        if (innerHTML.length !== 0) {
-          content.push(innerHTML);
+        tag_attrs = "";
+        tag_name = tag_portion;
+        if (si = indexOf(tag_portion, ' ')) {
+          tag_name = tag_portion.substring(0, si);
+          tag_attrs = tag_portion.substring(si);
+        }
+        if (tag_name[0] === '#') {
+          tag_attrs = "id=" + tag_name.substring(1) + tag_attrs;
+          tag_name = "div";
+        }
+        if (tag_name[0] === '.') {
+          tag_attrs = "class=" + tag_name.substring(1) + tag_attrs;
+          tag_name = "div";
+        }
+        if (emptyTags[tag_name]) {
+          content.push("<" + tag_name + "/>");
+        } else {
+          tag_stack.push([last_tag_indent, tag_name]);
+          if (tag_attrs.length === 0) {
+            content.push("<" + tag_name + ">");
+          } else {
+            content.push(("<" + tag_name) + join_attrs(parse_attrs(tag_attrs)) + ">");
+          }
+          if (innerHTML.length !== 0) {
+            push_innerHTML(innerHTML);
+          }
         }
       }
     }
-    last_indent = pos;
   }
   while (tag_stack.length > 0) {
-    _ref3 = tag_stack.pop(), oldp = _ref3[0], oldt = _ref3[1];
+    _ref6 = tag_stack.pop(), oldp = _ref6[0], oldt = _ref6[1];
     content.push("</" + oldt + ">");
   }
   return content.join("");
+};
+indexOf = function(str, substr) {
+  var i;
+  i = str.indexOf(substr);
+  if (i === -1) {
+    return null;
+  } else {
+    return i;
+  }
+};
+lastIndexOf = function(str, substr) {
+  var i;
+  i = str.lastIndexOf(substr);
+  if (i === -1) {
+    return null;
+  } else {
+    return i;
+  }
 };
 makeMap = function(str) {
   var i, items, obj, _i, _len;
@@ -119,22 +165,25 @@ join_attrs = function(attrs) {
   }
   return _results;
 };
+/* tests */
 t = __bind(function(a, b) {
   var h;
-  h = this.HamletToHtml(b);
+  h = this.HamletToHtml(b).replace(/\n/g, " ");
   if (a !== h) {
     return console.log("from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h);
   }
 }, this);
 t("<div></div>", "<div>");
 t('<span>#{foo}</span>', '<span>#{foo}');
-t("<p class=\"foo\"><div id=\"bar\">baz</div></p>", "<p .foo>\n  <#bar>baz");
+t('<p class="foo"><div id="bar">baz </div></p>', "<p .foo>\n  <#bar>baz # this is a comment");
 t('<p class="foo.bar"><div id="bar">baz</div></p>', "<p class=foo.bar\n  <#bar>baz");
+t("<div>foo bar</div>", "<div>\n  foo\n  bar");
+t("<div>foo<span>bar</span></div>", "<div>\n  foo\n  ><span>bar");
+t('<p>You are logged in as <i>Michael</i> <b>Snoyman</b>, <a href="/logout">logout</a>.</p><p>Multi line paragraph.</p>', "<p>You are logged in as\n  <i>Michael\n  <b>Snoyman\n  >,\n  <a href=\"/logout\">logout\n  >.\n><p>Multi\n  line\n  paragraph.");
 interp = __bind(function() {
   var foo, itp;
   foo = "bar";
-  itp = this.Hamlet("" + foo);
-  console.log(itp);
+  itp = this.HamletInterpolate("" + foo);
   if ("bar" !== itp) {
     return console.log(itp);
   }
