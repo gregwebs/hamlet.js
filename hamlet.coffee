@@ -1,9 +1,6 @@
 # * Hamlet Html Templates for javascript. http://www.yesodweb.com/book/templates
 # Re-uses some code from HTML Parser By John Resig (ejohn.org)
 # * LICENSE: Mozilla Public License
-#
-# TODO:
-# * html comments
 
 this.Hamlet = (html) ->
   this.HamletInterpolate( this.HamletToHtml(html) )
@@ -18,6 +15,10 @@ this.HamletToHtml = (html) ->
   needs_space = false
 
   push_innerHTML = (str) ->
+    # lastIndexOf is a bit of a hack to keep it simple and quick
+    # Don't want to catch a '#{}' interpolation
+    # But if someone has a '#' in their comment (as this line does)
+    # it won't work correctly
     if (i = lastIndexOf(str, '#')) && str[i + 1] != '{'
       str = str.substring(0, i)
 
