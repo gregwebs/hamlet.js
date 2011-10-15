@@ -64,12 +64,15 @@ If you don't want white space, you point it out with a '>' character.
 ```
 
 ## Functions exposed:
+
 * Hamlet - compile the template and evaluate the javascript
 
 For faster execution, first turn your template into regular html just once with
+
 * HamletToHtml
 
 Then execute the template with:
+
 * HamletInterpolate - eval javascript from
 
 # Testing
