@@ -2,24 +2,39 @@
 # Re-uses some code from HTML Parser By John Resig (ejohn.org)
 # * LICENSE: Mozilla Public License
 
-this.Hamlet = (html) ->
-  this.HamletInterpolate( this.HamletToHtml(html) )
+# from underscore.js, MIT license
+# remove escape and evaluate, just use interpolate   
+Hamlet = `function(str, data){
+    var c  = Hamlet.templateSettings;
+    var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
+      'with(obj||{}){__p.push(\'' +
+      str.replace(/\\/g, '\\\\')
+         .replace(/'/g, "\\'")
+         .replace(c.interpolate, function(match, code) {
+           return "'," + code.replace(/\\'/g, "'") + ",'";
+         })
+         .replace(/\r/g, '\\r')
+         .replace(/\n/g, '\\n')
+         .replace(/\t/g, '\\t')
+         + "');}return __p.join('');";
+    var func = new Function('obj', tmpl);
+    return data ? func(data) : func;
+  };
+`
 
-this.HamletInterpolate = (html) ->
-  html.replace /#\{(.*)\}/, (match, js) -> eval(js)
 
-this.HamletToHtml = (html) ->
+Hamlet.templateSettings = {
+  interpolate    : /\{\{([\s\S]+?)\}\}/g,
+}
+
+Hamlet.toHtml = (html) ->
   content = []
   tag_stack = []
   last_tag_indent = 0
   needs_space = false
 
   push_innerHTML = (str) ->
-    # lastIndexOf is a bit of a hack to keep it simple and quick
-    # Don't want to catch a '#{}' interpolation
-    # But if someone has a '#' in their comment (as this line does)
-    # it won't work correctly
-    if (i = lastIndexOf(str, '#')) && str[i + 1] != '{'
+    if i = indexOf(str, '#')
       str = str.substring(0, i)
 
     needs_space = true
@@ -108,10 +123,6 @@ indexOf = (str, substr) ->
   i = str.indexOf(substr)
   if i == -1 then null else i
 
-lastIndexOf = (str, substr) ->
-  i = str.lastIndexOf(substr)
-  if i == -1 then null else i
-
 makeMap = (str) ->
     obj = {}
     items = str.split(",")
@@ -163,12 +174,12 @@ join_attrs = (attrs) ->
 ### tests ###
 
 t = (a, b) =>
-  h = this.HamletToHtml(b).replace(/\n/g, " ")
+  h = Hamlet.toHtml(b).replace(/\n/g, " ")
   if a != h
     console.log("from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h)
 
 t("<div></div>", "<div>")
-t('<span>#{foo}</span>', '<span>#{foo}')
+t('<span>%{foo}</span>', '<span>%{foo}')
 
 t '<p class="foo"><div id="bar">baz </div></p>', """
 <p .foo>
@@ -205,9 +216,11 @@ t '<p>You are logged in as <i>Michael</i> <b>Snoyman</b>, <a href="/logout">logo
 """
 
 interp = =>
-  foo = "bar"
-  itp = @HamletInterpolate("#{foo}")
-  unless "bar" == itp
-    console.log(itp)
+  r = Hamlet('{{foo}} {{bar}}',
+    foo : "a"
+    bar : "b"
+  )
+  unless "a b" == r
+    console.log("Fail: " + r)
 
 interp()

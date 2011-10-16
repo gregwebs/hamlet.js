@@ -1,14 +1,30 @@
-var attrMatch, emptyTags, fillAttrs, indexOf, interp, join_attrs, lastIndexOf, makeMap, parse_attrs, t;
+var Hamlet, attrMatch, emptyTags, fillAttrs, indexOf, interp, join_attrs, makeMap, parse_attrs, t, _;
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-this.Hamlet = function(html) {
-  return this.HamletInterpolate(this.HamletToHtml(html));
+_ = function() {};
+_.templateSettings = {
+  interpolate: /<%=([\s\S]+?)%>/g
 };
-this.HamletInterpolate = function(html) {
-  return html.replace(/#\{(.*)\}/, function(match, js) {
-    return eval(js);
-  });
+Hamlet = function(str, data){
+    var c  = Hamlet.templateSettings;
+    var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
+      'with(obj||{}){__p.push(\'' +
+      str.replace(/\\/g, '\\\\')
+         .replace(/'/g, "\\'")
+         .replace(c.interpolate, function(match, code) {
+           return "'," + code.replace(/\\'/g, "'") + ",'";
+         })
+         .replace(/\r/g, '\\r')
+         .replace(/\n/g, '\\n')
+         .replace(/\t/g, '\\t')
+         + "');}return __p.join('');";
+    var func = new Function('obj', tmpl);
+    return data ? func(data) : func;
+  };
+;
+Hamlet.templateSettings = {
+  interpolate: /\{\{([\s\S]+?)\}\}/g
 };
-this.HamletToHtml = function(html) {
+Hamlet.toHtml = function(html) {
   var content, innerHTML, last_tag_indent, line, needs_space, oldp, oldt, pos, push_innerHTML, si, tag_attrs, tag_name, tag_portion, tag_stack, ti, unindented, _i, _len, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
   content = [];
   tag_stack = [];
@@ -16,7 +32,7 @@ this.HamletToHtml = function(html) {
   needs_space = false;
   push_innerHTML = function(str) {
     var i;
-    if ((i = lastIndexOf(str, '#')) && str[i + 1] !== '{') {
+    if (i = indexOf(str, '#')) {
       str = str.substring(0, i);
     }
     needs_space = true;
@@ -112,15 +128,6 @@ indexOf = function(str, substr) {
     return i;
   }
 };
-lastIndexOf = function(str, substr) {
-  var i;
-  i = str.lastIndexOf(substr);
-  if (i === -1) {
-    return null;
-  } else {
-    return i;
-  }
-};
 makeMap = function(str) {
   var i, items, obj, _i, _len;
   obj = {};
@@ -168,24 +175,26 @@ join_attrs = function(attrs) {
 /* tests */
 t = __bind(function(a, b) {
   var h;
-  h = this.HamletToHtml(b).replace(/\n/g, " ");
+  h = Hamlet.toHtml(b).replace(/\n/g, " ");
   if (a !== h) {
     return console.log("from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h);
   }
 }, this);
 t("<div></div>", "<div>");
-t('<span>#{foo}</span>', '<span>#{foo}');
+t('<span>%{foo}</span>', '<span>%{foo}');
 t('<p class="foo"><div id="bar">baz </div></p>', "<p .foo>\n  <#bar>baz # this is a comment");
 t('<p class="foo.bar"><div id="bar">baz</div></p>', "<p class=foo.bar\n  <#bar>baz");
 t("<div>foo bar</div>", "<div>\n  foo\n  bar");
 t("<div>foo<span>bar</span></div>", "<div>\n  foo\n  ><span>bar");
 t('<p>You are logged in as <i>Michael</i> <b>Snoyman</b>, <a href="/logout">logout</a>.</p><p>Multi line paragraph.</p>', "<p>You are logged in as\n  <i>Michael\n  <b>Snoyman\n  >,\n  <a href=\"/logout\">logout\n  >.\n><p>Multi\n  line\n  paragraph.");
 interp = __bind(function() {
-  var foo, itp;
-  foo = "bar";
-  itp = this.HamletInterpolate("" + foo);
-  if ("bar" !== itp) {
-    return console.log(itp);
+  var r;
+  r = Hamlet('{{foo}} {{bar}}', {
+    foo: "a",
+    bar: "b"
+  });
+  if ("a b" !== r) {
+    return console.log("Fail: " + r);
   }
 }, this);
 interp();

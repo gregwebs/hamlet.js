@@ -1,22 +1,24 @@
 # Hamlet Html Templates for javascript
 
 This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/templates) template language.
-There are less features, including just a single #{} to eval javascript
 
 # Synatx
 
-``` html
+``` coffeescript
+Hamlet("""
 <.foo>
-  <span#bar data-attr=foo>baz # this is a comment
+  <span#bar data-attr={{foo}}>baz # this is a comment
+""", {foo:'f'})
 ```
 
 generates:
 
 ``` html
-<div class="foo"><span id="bar" data-attr="foo">baz </span></div>
+<div class="foo"><span id="bar" data-attr="f">baz </span></div>
 ```
 
 The library does not try to pretty print the resulting html, although it wouldn't be hard to do.
+Note the mustache style interpolation `{{var}}`. I am not a huge fan of that, but it was easier to implement than some alternatives.
 
 ## Overview
 
@@ -25,6 +27,7 @@ It is just HTML! But redundancies are taken away
 * Indentation is used to automatically close tags.
 
 The second point is wonderful - you already properly indent your tags right?
+Let the computer type your closing tags for you.
 
 ## class/id shortcuts
 
@@ -35,7 +38,7 @@ a '#' indicates an id, and a '.' indicates a class
 
 Comments begin with a '#' character.
 They are dropped, not converted to html comments.
-Currently there is no support for html comments.
+There is no support for html comments.
 
 ## White space
 
@@ -50,7 +53,7 @@ This library uses one similar technique - if you want to have a space within a t
 <b>space!  </b>
 ```
 
-This library automatically adds white space after tags.
+An imporant difference is that this library automatically adds white space after tags.
 If you don't want white space, you point it out with a '>' character.
 This idea is loosly based on "whitespace alligators" from HAML.
 
