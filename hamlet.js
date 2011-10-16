@@ -1,11 +1,8 @@
-var Hamlet, attrMatch, emptyTags, fillAttrs, indexOf, interp, join_attrs, makeMap, parse_attrs, t, _;
+var Hamlet, attrMatch, emptyTags, fillAttrs, indexOf, interp, join_attrs, makeMap, parse_attrs, t;
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-_ = function() {};
-_.templateSettings = {
-  interpolate: /<%=([\s\S]+?)%>/g
-};
 Hamlet = function(str, data){
     var c  = Hamlet.templateSettings;
+    str = Hamlet.toHtml(str);
     var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
       'with(obj||{}){__p.push(\'' +
       str.replace(/\\/g, '\\\\')

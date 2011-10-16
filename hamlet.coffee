@@ -2,10 +2,11 @@
 # Re-uses some code from HTML Parser By John Resig (ejohn.org)
 # * LICENSE: Mozilla Public License
 
-# from underscore.js, MIT license
+# this one javascript function is _.template from underscore.js, MIT license
 # remove escape and evaluate, just use interpolate   
 Hamlet = `function(str, data){
     var c  = Hamlet.templateSettings;
+    str = Hamlet.toHtml(str);
     var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
       'with(obj||{}){__p.push(\'' +
       str.replace(/\\/g, '\\\\')

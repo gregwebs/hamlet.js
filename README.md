@@ -4,6 +4,8 @@ This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/
 
 # Synatx
 
+This example uses a coffeescript multi-line string, but should otherwise look like javascript.
+
 ``` coffeescript
 Hamlet("""
 <.foo>
@@ -28,6 +30,16 @@ It is just HTML! But redundancies are taken away
 
 The second point is wonderful - you already properly indent your tags right?
 Let the computer type your closing tags for you.
+
+## Usage
+
+This re-uses _.template from underscore.js
+
+``` javascript
+rendered = Hamlet(template, object)
+pre_compiled_template = Hamlet(template)
+pre_compiled_template(object) 
+```
 
 ## class/id shortcuts
 
