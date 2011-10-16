@@ -35,7 +35,7 @@ Let the computer type your closing tags for you.
 
 This re-uses _.template from underscore.js
 
-``` javascript
+``` js
 rendered = Hamlet(template, object)
 pre_compiled_template = Hamlet(template)
 pre_compiled_template(object) 
