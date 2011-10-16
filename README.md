@@ -1,6 +1,9 @@
 # Hamlet Html Templates for javascript
 
-This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/templates) template language.
+Hamlet is just html without redundencies.
+The big deal is that it uses your white space to automatically close tags.
+You already properly indent your tags right?
+Computers are supposed to autmoate things - lets have them close tags for us.
 
 # Synatx
 
@@ -20,16 +23,16 @@ generates:
 ```
 
 The library does not try to pretty print the resulting html, although it wouldn't be hard to do.
-Note the mustache style interpolation `{{var}}`. I am not a huge fan of that, but it was easier to implement than some alternatives.
+Note the mustache style interpolation `{{var}}`.
+I am not a huge fan of that, but it was easier to implement than some alternatives.
 
 ## Overview
+
+This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/templates) template language that I helped design.
 
 It is just HTML! But redundancies are taken away
 * quoting attributes is not required unless they have spaces
 * Indentation is used to automatically close tags.
-
-The second point is wonderful - you already properly indent your tags right?
-Let the computer type your closing tags for you.
 
 ## Usage
 
@@ -90,6 +93,12 @@ For faster execution, first turn your template into regular html just once with
 Then execute the template with:
 
 * HamletInterpolate - eval javascript from
+
+## Limitations
+
+I haven't used this much yet. Let me know if any bugs, I do have test cases.
+I still consider the interpolation and white space syntax experimental.
+Let me know if you have better ideas.
 
 # Testing
 
