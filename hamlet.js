@@ -1,5 +1,4 @@
-var Hamlet, attrMatch, emptyTags, fillAttrs, indexOf, interp, join_attrs, makeMap, parse_attrs, t;
-var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var Hamlet, attrMatch, emptyTags, fillAttrs, indexOf, join_attrs, makeMap, parse_attrs;
 Hamlet = function(str, data){
     var c  = Hamlet.templateSettings;
     str = Hamlet.toHtml(str);
@@ -169,29 +168,3 @@ join_attrs = function(attrs) {
   }
   return _results;
 };
-/* tests */
-t = __bind(function(a, b) {
-  var h;
-  h = Hamlet.toHtml(b).replace(/\n/g, " ");
-  if (a !== h) {
-    return console.log("from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h);
-  }
-}, this);
-t("<div></div>", "<div>");
-t('<span>%{foo}</span>', '<span>%{foo}');
-t('<p class="foo"><div id="bar">baz </div></p>', "<p .foo>\n  <#bar>baz # this is a comment");
-t('<p class="foo.bar"><div id="bar">baz</div></p>', "<p class=foo.bar\n  <#bar>baz");
-t("<div>foo bar</div>", "<div>\n  foo\n  bar");
-t("<div>foo<span>bar</span></div>", "<div>\n  foo\n  ><span>bar");
-t('<p>You are logged in as <i>Michael</i> <b>Snoyman</b>, <a href="/logout">logout</a>.</p><p>Multi line paragraph.</p>', "<p>You are logged in as\n  <i>Michael\n  <b>Snoyman\n  >,\n  <a href=\"/logout\">logout\n  >.\n><p>Multi\n  line\n  paragraph.");
-interp = __bind(function() {
-  var r;
-  r = Hamlet('{{foo}} {{bar}}', {
-    foo: "a",
-    bar: "b"
-  });
-  if ("a b" !== r) {
-    return console.log("Fail: " + r);
-  }
-}, this);
-interp();

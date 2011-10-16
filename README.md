@@ -40,8 +40,13 @@ This re-uses _.template from underscore.js
 
 ``` js
 rendered = Hamlet(template, object)
+```
+
+or
+
+``` js
 pre_compiled_template = Hamlet(template)
-pre_compiled_template(object) 
+rendered = pre_compiled_template(object) 
 ```
 
 ## class/id shortcuts
@@ -102,6 +107,8 @@ Let me know if you have better ideas.
 
 # Testing
 
-coffee -cb hamlet.coffee && node hamlet.js
+I wanted to run tests without the browser overhead, but I am using this on the client, not on node. I came up with this:
+
+coffee -cb hamlet.coffee && coffee -cb test.coffee && cp hamlet.js runtests.js && cat test.js >> runtests.js && node runtests.js && echo "PASS" || echo "FAIL"
 
 Test cases are ported from [the Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
