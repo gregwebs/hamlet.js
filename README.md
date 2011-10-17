@@ -10,13 +10,11 @@ Computers are supposed to autmoate things - lets have them close tags for us.
 This example uses a coffeescript multi-line string, but should otherwise look like javascript.
 
 ``` html
-Hamlet("""
 <.foo>
   <span#bar data-attr={{foo}}>baz # this is a comment
-""", {foo:'f'})
 ```
 
-generates:
+invoked with: `Hamlet(template, {foo:'f'})`.  generates:
 
 ``` html
 <div class="foo"><span id="bar" data-attr="f">baz </span></div>
