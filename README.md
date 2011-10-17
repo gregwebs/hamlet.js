@@ -9,7 +9,7 @@ Computers are supposed to autmoate things - lets have them close tags for us.
 
 This example uses a coffeescript multi-line string, but should otherwise look like javascript.
 
-``` coffeescript
+``` html
 Hamlet("""
 <.foo>
   <span#bar data-attr={{foo}}>baz # this is a comment
