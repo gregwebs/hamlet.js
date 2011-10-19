@@ -21,16 +21,15 @@ invoked with: `Hamlet(template, {foo:'f'})`.  generates:
 ```
 
 The library does not try to pretty print the resulting html, although it wouldn't be hard to do.
-Note the mustache style interpolation `{{var}}`.
-I am not a huge fan of that, but it was easier to implement than some alternatives.
+Note the mustache style interpolation `{{var}}`. I have never had the opportunity to use mustache templates - this was simply easier to implement than some alternatives. You can put any javascript you would like in the interpolation.
 
 ## Overview
-
-This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/templates) template language that I helped design.
 
 It is just HTML! But redundancies are taken away
 * quoting attributes is not required unless they have spaces
 * Indentation is used to automatically close tags.
+
+This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/templates) template language that I helped design. This implementation is simpler because it is invoked at runtime, just does a simple javascript eval, and has no concept of type insertion - this includes no html escaping.
 
 ## Usage
 
@@ -44,7 +43,7 @@ or
 
 ``` js
 pre_compiled_template = Hamlet(template)
-rendered = pre_compiled_template(object) 
+rendered = pre_compiled_template(object)
 ```
 
 ## class/id shortcuts
@@ -67,35 +66,27 @@ In the original Hamlet language you must use an explicit notation to add white s
 This library uses one similar technique - if you want to have a space within a tag, use a comment on the line.
 
 ``` html
-<b>space!  # 2 spaces are included
-<b>space!  </b>
+<b>spaces  # 2 spaces are included
+```
+
+``` html
+<b>spaces  </b>
 ```
 
 An imporant difference is that this library automatically adds white space after tags.
-If you don't want white space, you point it out with a '>' character.
-This idea is loosly based on "whitespace alligators" from HAML.
+If you don't want white space, you point it out with a '>' character, that you could think of a the end of the last tag.
+You can also use the '>' If you want more than one space.
 
 ``` html
 <p>
   <b>no space
-  >none here either
+  >none here either.
+  >  Two spaces after a period is bad!
 ```
 
 ``` html
-<p><b>no space</b>none here either</p>
+<p><b>no space</b>none here either.  Two spaces after a period is bad!</p>
 ```
-
-## Functions exposed:
-
-* Hamlet - compile the template and evaluate the javascript
-
-For faster execution, first turn your template into regular html just once with
-
-* HamletToHtml
-
-Then execute the template with:
-
-* HamletInterpolate - eval javascript from
 
 ## Limitations
 

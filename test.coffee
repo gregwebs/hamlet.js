@@ -41,6 +41,13 @@ t '<p>You are logged in as <i>Michael</i> <b>Snoyman</b>, <a href="/logout">logo
   paragraph.
 """
 
+t '<p><b>no space</b>none here either.  Two spaces after a period is bad!</p>', '''
+<p>
+  <b>no space
+  >none here either.
+  >  Two spaces after a period is bad!
+'''
+
 interp = =>
   r = Hamlet('{{foo}} {{bar}}',
     foo : "a"
