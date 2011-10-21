@@ -64,7 +64,7 @@ There is no support for html comments.
 
 Using indentation does have some consequences with respect to white space. This library is designed to just do the right thing most of the time. This is a slightly different design from the original Haskell implementation of Hamlet.
 
-If you want to have a space before a closing tag, use a comment sign `#` on the line to indicate where the end of the line is.
+A closing tag is placed immediately after the tag contents. If you want to have a space before a closing tag, use a comment sign `#` on the line to indicate where the end of the line is.
 
 ``` html
 <b>spaces  # 2 spaces are included
@@ -74,7 +74,7 @@ If you want to have a space before a closing tag, use a comment sign `#` on the 
 <b>spaces  </b>
 ```
 
-This library automatically adds white space *after* tags. If you do not want white space, you point it out with a `>` character, that you could think of as the end of the last tag, although you can still use it when separating content without tags onto different lines. You can also use a `>` if you want more than one space.
+White space is automatically added *after* tags with inner text. If you have multiple lines of inner text without tags (not a real use case) they will also get a space added. If you do not want white space, you point it out with a `>` character, that you could think of as the end of the last tag, although you can still use it when separating content without tags onto different lines. You can also use a `>` if you want more than one space.
 
 ``` html
 <p>
@@ -96,7 +96,7 @@ I still consider the interpolation and white space syntax experimental - let me 
 
 Requires coffeescript, although if you are only comfortable changing js I can easily port it to the coffeescript file.
 
-# Testing
+## Testing
 
 I wanted to run tests without the browser overhead, but I am using this on the client, not on node (I don't want to pollute it with package statements just for testing purposes). Maybe there is a better way? I came up with this though, which works fine:
 
@@ -105,3 +105,10 @@ I wanted to run tests without the browser overhead, but I am using this on the c
 You could run the tests in a browser or on rhino though.
 
 Test cases can be ported from [the Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
+
+# TODO
+
+* Add conditional attribute syntax
+
+    <p :isRed:style="color:red">
+    <input type=checkbox :isChecked:checked>

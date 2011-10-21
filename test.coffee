@@ -29,10 +29,10 @@ t "<div>foo<span>bar</span></div>", """
   ><span>bar
 """
 
-t '<p>You are logged in as <i>Michael</i> <b>Snoyman</b>, <a href="/logout">logout</a>.</p><p>Multi line paragraph.</p>', """
+t '<p>You are logged in as <i>Greg</i> <b>Weber</b>, <a href="/logout">logout</a>.</p><p>Multi line paragraph.</p>', """
 <p>You are logged in as
-  <i>Michael
-  <b>Snoyman
+  <i>Greg
+  <b>Weber
   >,
   <a href="/logout">logout
   >.
@@ -44,6 +44,19 @@ t '<p>You are logged in as <i>Michael</i> <b>Snoyman</b>, <a href="/logout">logo
 t '<i>No</i><b>Space</b>', '''
   <i>No
   ><b>Space
+'''
+
+t '<p>No close bracket</p> <p>No close</p>', '''
+  <p
+    No close bracket
+  <p
+    No close
+'''
+
+t '<img></img><p>No close</p>', '''
+  <img
+  <p
+    No close
 '''
 
 t '<p><b>no space</b>none here either.  Two spaces after a period is bad!</p>', '''
