@@ -7,6 +7,8 @@ Computers are supposed to automate things - lets have them close tags for us.
 
 This is similar in concept to HAML. However, HAML abandons html syntax without justification. If we just apply significant white-space and a few other html-compatible shortcuts to regular HTML, we can get the benefit without the drawback. Designers that have used the Haskell version of Hamlet have really liked it.
 
+I created this with client-side templating in mind, but it works server side with node.js
+
 # Synatx
 
 ``` html
@@ -34,7 +36,7 @@ This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/
 
 ## Usage
 
-This uses the same style (and code) as  `_.template` from underscore.js
+This uses the same style and code as the template function from underscore.js
 
 ``` js
 rendered = Hamlet(template, object)
@@ -90,10 +92,16 @@ This library automatically adds white space *after* tags. If you do not want whi
 I just created it - haven't used it much yet. I do have test cases, but let me know if you encounter any issues.
 I still consider the interpolation and white space syntax experimental - let me know if you have better ideas.
 
+# Development 
+
+Requires coffeescript, although if you are only comfortable changing js I can easily port it to the coffeescript file.
+
 # Testing
 
-I wanted to run tests without the browser overhead, but I am using this on the client, not on node. I came up with this:
+I wanted to run tests without the browser overhead, but I am using this on the client, not on node (I don't want to pollute it with package statements just for testing purposes). Maybe there is a better way? I came up with this though, which works fine:
 
 coffee -cb hamlet.coffee && coffee -cb test.coffee && cp hamlet.js runtests.js && cat test.js >> runtests.js && node runtests.js && echo "PASS" || echo "FAIL"
+
+You could run the tests in a browser or on rhino though.
 
 Test cases can be ported from [the Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
