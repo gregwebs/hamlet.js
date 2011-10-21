@@ -5,6 +5,8 @@ The big deal is that it uses your white space to automatically close tags.
 You already properly indent your tags right?
 Computers are supposed to automate things - lets have them close tags for us.
 
+This is similar in concept to HAML. However, HAML abandons html syntax without justification. If we just apply significant white-space and a few other html-compatible shortcuts to regular HTML, we can get the benefit without the drawback. Designers that have used the Haskell version of Hamlet have really liked it.
+
 # Synatx
 
 This example uses a coffeescript multi-line string, but should otherwise look like javascript.
