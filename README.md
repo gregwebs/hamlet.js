@@ -12,6 +12,28 @@ I created this with client-side templating in mind, but it works server side wit
 # Synatx
 
 ``` html
+<body>
+    <p>Some paragraph.
+    <ul>
+        <li>Item 1
+        <li>Item 2
+```
+
+in hamlet is equivalent to:
+
+``` html
+<body>
+  <p>Some paragraph.</p>
+  <ul>
+    <li>Item 1</li>
+    <li>Item 2</li>
+  </ul>
+</body>
+```
+
+Lets show some templating and css shortcuts:
+
+``` html
 <.foo>
   <span#bar data-attr={{foo}}>baz # this is a comment
 ```
