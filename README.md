@@ -72,7 +72,7 @@ If you want to have a space before a closing tag, use a comment sign `#` on the 
 <b>spaces  </b>
 ```
 
-This library automatically adds white space *after* tags. If you do not want white space, you point it out with a `>` character, that you could think of as the end of the last tag, although you can still use it when separating content without tags onto different lines. You can also use the `>` if you want more than one space.
+This library automatically adds white space *after* tags. If you do not want white space, you point it out with a `>` character, that you could think of as the end of the last tag, although you can still use it when separating content without tags onto different lines. You can also use a `>` if you want more than one space.
 
 ``` html
 <p>
