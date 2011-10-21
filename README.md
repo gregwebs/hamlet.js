@@ -1,15 +1,15 @@
 # Hamlet Html Templates for javascript
 
-Hamlet is just html without redundencies.
+Hamlet is just html without redundancies.
 The big deal is that it uses your white space to automatically close tags.
 You already properly indent your tags right?
 Computers are supposed to automate things - lets have them close tags for us.
 
 This is similar in concept to HAML. However, HAML abandons html syntax without justification. If we just apply significant white-space and a few other html-compatible shortcuts to regular HTML, we can get the benefit without the drawback. Designers that have used the Haskell version of Hamlet have really liked it.
 
-I created this with client-side templating in mind, but it works server side with node.js
+I created this with client-side templates in mind, but it works server side with node.js
 
-# Synatx
+# Syntax
 
 ``` html
 <body>
@@ -19,7 +19,7 @@ I created this with client-side templating in mind, but it works server side wit
         <li>Item 2
 ```
 
-in hamlet is equivalent to:
+That hamlet is equivalent to:
 
 ``` html
 <body>
@@ -31,14 +31,14 @@ in hamlet is equivalent to:
 </body>
 ```
 
-Lets show some templating and css shortcuts:
+Lets show some interpolation and CSS shortcuts:
 
 ``` html
 <.foo>
   <span#bar data-attr={{foo}}>baz # this is a comment
 ```
 
-invoked with: `Hamlet(template, {foo:'f'})`.  generates:
+That template invoked with: `Hamlet(template, {foo:'f'})`.  generates:
 
 ``` html
 <div class="foo"><span id="bar" data-attr="f">baz </span></div>
@@ -73,8 +73,8 @@ rendered_html = pre_compiled_template(object)
 
 ## class/id shortcuts
 
-This css-based shortcut is originally taken from the HAML markup language.
-a '#' indicates an id, and a '.' indicates a class
+The CSS-based shortcuts are originally taken from the HAML markup language.
+A '#' indicates an id, and a '.' indicates a class. You can add as many classes this way as you like.
 
 ## Comments
 
@@ -108,6 +108,9 @@ White space is automatically added *after* tags with inner text. If you have mul
 ``` html
 <p><b>no space</b>none here either.  Two spaces after a period is bad!</p>
 ```
+## Don't tell anyone :)
+
+,  the '>' character is optional if there is no inner content on that line. There can still can be inner content on the next line. I don't tout this because some of those used to html don't find it aesthetically pleasing. But don't let anyone tell you that HAML has one less character :)
 
 ## Limitations
 
@@ -116,7 +119,7 @@ I still consider the interpolation and white space syntax experimental - let me 
 
 # Development 
 
-Requires coffeescript, although if you are only comfortable changing js I can easily port it to the coffeescript file.
+Requires Coffeescript, although if you are only comfortable changing js I can easily port it to the Coffeescript file.
 
 ## Testing
 
