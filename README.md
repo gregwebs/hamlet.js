@@ -39,14 +39,14 @@ This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/
 This uses the same style and code as the template function from underscore.js
 
 ``` js
-rendered = Hamlet(template, object)
+rendered_html = Hamlet(template, object)
 ```
 
 or
 
 ``` js
 pre_compiled_template = Hamlet(template)
-rendered = pre_compiled_template(object)
+rendered_html = pre_compiled_template(object)
 ```
 
 ## class/id shortcuts
