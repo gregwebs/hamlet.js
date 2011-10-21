@@ -41,6 +41,11 @@ t '<p>You are logged in as <i>Michael</i> <b>Snoyman</b>, <a href="/logout">logo
   paragraph.
 """
 
+t '<i>No</i><b>Space</b>', '''
+  <i>No
+  ><b>Space
+'''
+
 t '<p><b>no space</b>none here either.  Two spaces after a period is bad!</p>', '''
 <p>
   <b>no space
