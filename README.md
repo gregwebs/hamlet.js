@@ -96,7 +96,7 @@ A closing tag is placed immediately after the tag contents. If you want to have 
 <b>spaces  </b>
 ```
 
-White space is automatically added *after* tags with inner text. If you have multiple lines of inner text without tags (not a real use case) they will also get a space added. If you do not want white space, you point it out with a `>` character, that you could think of as the end of the last tag, although you can still use it when separating content without tags onto different lines. You can also use a `>` if you want more than one space.
+White space is automatically added *after* tags with inner text. If you have multiple lines of inner text without tags (not a common use case) they will also get a space added. If you do not want white space, you point it out with a `>` character, that you could think of as the end of the last tag, although you can still use it when separating content without tags onto different lines. You can also use a `>` if you want more than one space.
 
 ``` html
 <p>
