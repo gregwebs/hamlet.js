@@ -34,7 +34,7 @@ This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/
 
 ## Usage
 
-This re-uses _.template from underscore.js
+This uses the same style (and code) as  `_.template` from underscore.js
 
 ``` js
 rendered = Hamlet(template, object)
@@ -55,16 +55,14 @@ a '#' indicates an id, and a '.' indicates a class
 ## Comments
 
 Comments begin with a '#' character.
-They are dropped, not converted to html comments.
+When the template is compiled they are removed, not converted to html comments.
 There is no support for html comments.
 
 ## White space
 
-Using indentation does have some consequences with respect to white space.
-Not that this is necessarily bad, but it is at least different.
+Using indentation does have some consequences with respect to white space. This library is designed to just do the right thing most of the time. This is a slightly different design from the original Haskell implementation of Hamlet.
 
-In the original Hamlet language you must use an explicit notation to add white space.
-This library uses one similar technique - if you want to have a space within a tag, use a comment on the line.
+If you want to have a space before a closing tag, use a comment sign `#` on the line to indicate where the end of the line is.
 
 ``` html
 <b>spaces  # 2 spaces are included
@@ -74,9 +72,7 @@ This library uses one similar technique - if you want to have a space within a t
 <b>spaces  </b>
 ```
 
-An imporant difference is that this library automatically adds white space after tags.
-If you don't want white space, you point it out with a '>' character, that you could think of a the end of the last tag.
-You can also use the '>' If you want more than one space.
+This library automatically adds white space *after* tags. If you don't want white space, you point it out with a '>' character, that you could think of a the end of the last tag. You can also use the '>' If you want more than one space.
 
 ``` html
 <p>
@@ -91,9 +87,8 @@ You can also use the '>' If you want more than one space.
 
 ## Limitations
 
-I haven't used this much yet. Let me know if any bugs, I do have test cases.
-I still consider the interpolation and white space syntax experimental.
-Let me know if you have better ideas.
+I just created it - haven't used it much yet. I do have test cases, but let me know if you encounter any issues.
+I still consider the interpolation and white space syntax experimental - let me know if you have better ideas.
 
 # Testing
 
@@ -101,4 +96,4 @@ I wanted to run tests without the browser overhead, but I am using this on the c
 
 coffee -cb hamlet.coffee && coffee -cb test.coffee && cp hamlet.js runtests.js && cat test.js >> runtests.js && node runtests.js && echo "PASS" || echo "FAIL"
 
-Test cases are ported from [the Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
+Test cases can be ported from [the Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
