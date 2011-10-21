@@ -3,7 +3,7 @@
 Hamlet is just html without redundencies.
 The big deal is that it uses your white space to automatically close tags.
 You already properly indent your tags right?
-Computers are supposed to autmoate things - lets have them close tags for us.
+Computers are supposed to automate things - lets have them close tags for us.
 
 # Synatx
 
