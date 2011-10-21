@@ -9,8 +9,6 @@ This is similar in concept to HAML. However, HAML abandons html syntax without j
 
 # Synatx
 
-This example uses a coffeescript multi-line string, but should otherwise look like javascript.
-
 ``` html
 <.foo>
   <span#bar data-attr={{foo}}>baz # this is a comment
@@ -22,12 +20,13 @@ invoked with: `Hamlet(template, {foo:'f'})`.  generates:
 <div class="foo"><span id="bar" data-attr="f">baz </span></div>
 ```
 
-The library does not try to pretty print the resulting html, although it wouldn't be hard to do.
+The library currently does not try to pretty print the resulting html, although it wouldn't be hard to do.
 Note the mustache style interpolation `{{var}}`. I have never had the opportunity to use mustache templates - this was simply easier to implement than some alternatives. You can put any javascript you would like in the interpolation.
 
 ## Overview
 
 It is just HTML! But redundancies are taken away
+
 * quoting attributes is not required unless they have spaces
 * Indentation is used to automatically close tags.
 
