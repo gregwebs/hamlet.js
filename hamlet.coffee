@@ -4,7 +4,7 @@
 
 # this one javascript function is _.template from underscore.js, MIT license
 # remove escape and evaluate, just use interpolate   
-Hamlet = `function(str, data){
+this.Hamlet = `function(str, data){
     var c  = Hamlet.templateSettings;
     str = Hamlet.toHtml(str);
     var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
@@ -24,11 +24,11 @@ Hamlet = `function(str, data){
 `
 
 
-Hamlet.templateSettings = {
+this.Hamlet.templateSettings = {
   interpolate    : /\{\{([\s\S]+?)\}\}/g,
 }
 
-Hamlet.toHtml = (html) ->
+this.Hamlet.toHtml = (html) ->
   content = []
   tag_stack = []
   last_tag_indent = 0

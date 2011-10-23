@@ -1,3 +1,4 @@
+Hamlet = this.Hamlet
 t = (a, b) =>
   h = Hamlet.toHtml(b).replace(/\n/g, " ")
   if a != h
