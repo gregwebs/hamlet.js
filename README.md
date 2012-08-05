@@ -71,6 +71,12 @@ pre_compiled_template = Hamlet(template)
 rendered_html = pre_compiled_template(object)
 ```
 
+Or you can avoid all variable assertion and just expand hamlet with:
+
+``` js
+Hamlet.toHtml('<p>') // "<p></p>"
+```
+
 ## class/id shortcuts
 
 The CSS-based shortcuts are originally taken from the HAML markup language.
