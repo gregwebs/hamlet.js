@@ -25,18 +25,28 @@ this.Hamlet.templateSettings = {
 };
 
 this.Hamlet.toHtml = function(html) {
-  var content, innerHTML, last_tag_indent, line, needs_space, oldp, oldt, pos, push_innerHTML, si, tag_attrs, tag_name, tag_portion, tag_stack, ti, unindented, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+  var content, delete_comment, innerHTML, last_tag_indent, line, needs_space, oldp, oldt, pos, push_innerHTML, si, tag_attrs, tag_name, tag_portion, tag_stack, ti, unindented, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
   content = [];
   tag_stack = [];
   last_tag_indent = 0;
   needs_space = false;
-  push_innerHTML = function(str) {
-    var i;
-    if (i = indexOf(str, '#')) {
-      str = str.substring(0, i);
+  delete_comment = function(s) {
+    var i, sub;
+    i = indexOf(s, '#');
+    if (!(i != null)) {
+      return s;
+    } else {
+      sub = s.substring(0, i);
+      if (indexOf(s, '&#') !== i - 1) {
+        return sub;
+      } else {
+        return sub + '#' + delete_comment(s.substring(i + 1));
+      }
     }
+  };
+  push_innerHTML = function(str) {
     needs_space = true;
-    return content.push(str);
+    return content.push(delete_comment(str));
   };
   _ref = html.split(/\n\r*/);
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -78,7 +88,8 @@ this.Hamlet.toHtml = function(html) {
         last_tag_indent = pos;
         innerHTML = "";
         tag_portion = unindented.substring(1);
-        if (ti = indexOf(unindented, '>')) {
+        ti = indexOf(unindented, '>');
+        if (ti != null) {
           tag_portion = unindented.substring(1, ti);
           if (tag_portion[tag_portion.length] === "/") {
             tag_portion = tag_portion.substring(innerHTML.length - 1);
@@ -87,7 +98,8 @@ this.Hamlet.toHtml = function(html) {
         }
         tag_attrs = "";
         tag_name = tag_portion;
-        if (si = indexOf(tag_portion, ' ')) {
+        si = indexOf(tag_portion, ' ');
+        if (si != null) {
           tag_name = tag_portion.substring(0, si);
           tag_attrs = tag_portion.substring(si);
         }

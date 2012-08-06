@@ -34,12 +34,17 @@ this.Hamlet.toHtml = (html) ->
   last_tag_indent = 0
   needs_space = false
 
-  push_innerHTML = (str) ->
-    if i = indexOf(str, '#')
-      str = str.substring(0, i)
+  delete_comment = (s) ->
+    i = indexOf(s, '#')
+    if !i? then s else
+      sub = s.substring(0, i)
+      # let an html encoded entity pass through
+      if indexOf(s, '&#') != i - 1 then sub else
+        sub + '#' + delete_comment(s.substring(i+1))
 
+  push_innerHTML = (str) ->
     needs_space = true
-    content.push(str)
+    content.push(delete_comment(str))
 
   for line in html.split(/\n\r*/)
     pos = 0
@@ -79,7 +84,8 @@ this.Hamlet.toHtml = (html) ->
 
         innerHTML = ""
         tag_portion = unindented.substring(1)
-        if ti = indexOf(unindented, '>')
+        ti = indexOf(unindented, '>')
+        if ti?
           tag_portion = unindented.substring(1, ti)
           if tag_portion[tag_portion.length] == "/"
             tag_portion = tag_portion.substring(innerHTML.length - 1)
@@ -87,7 +93,8 @@ this.Hamlet.toHtml = (html) ->
 
         tag_attrs = ""
         tag_name = tag_portion
-        if si = indexOf(tag_portion, ' ')
+        si = indexOf(tag_portion, ' ')
+        if si?
           tag_name = tag_portion.substring(0, si)
           tag_attrs = tag_portion.substring(si)
 
