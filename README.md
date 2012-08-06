@@ -129,11 +129,12 @@ Requires Coffeescript, although if you are only comfortable changing js I can ea
 
 ## Testing
 
-I wanted to run tests without the browser overhead, but I am using this on the client, not on node (I don't want to pollute it with package statements just for testing purposes). Maybe there is a better way? I came up with this though, which works fine:
+I wanted to run tests without the browser overhead. Probably there is a better way, but I came up with this which works fine:
 
     coffee -cb hamlet.coffee && coffee -cb test.coffee && cp hamlet.js runtests.js && cat test.js >> runtests.js && node runtests.js && echo "PASS" || echo "FAIL"
 
-You could run the tests in a browser or on rhino though.
+You could run the tests in a browser or elsewhere though.
+Note it requires coffee: `npm install coffee-script && ln -s node_modules/coffee-script/bin/coffee coffee`
 
 Test cases can be ported from [the Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
 
