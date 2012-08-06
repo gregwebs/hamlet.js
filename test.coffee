@@ -5,6 +5,13 @@ t = (a, b) =>
     console.log("from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h)
     process.exit(1) if process && process.exit
 
+t('<div class="actions bottom-row"><a href="#" class="like">Like</a></div><div class="likes bottom-row"><a href="#" class="likes">387 people</a> like this</a></div>',"""
+<div class="actions bottom-row">
+    <a class="like" href="#">Like
+<div class="likes bottom-row">
+    <a class="likes" href="#">387 people</a> like this
+""")
+
 t('<a href="{{fb_item_link(feed)}}" target="blank" class="open-post">&#8599;</a>',
     '<a class="open-post" href="{{fb_item_link(feed)}}" target="blank">&#8599;'
 )

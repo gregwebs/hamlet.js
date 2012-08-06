@@ -62,13 +62,13 @@ this.Hamlet.toHtml = function(html) {
 
     } else {
       if (pos <= last_tag_indent) {
-        if (tag_stack.length > 0 && pos === last_tag_indent) {
+        while (tag_stack.length > 0 && pos < last_tag_indent) {
+          needs_space = false;
           _ref1 = tag_stack.pop(), oldp = _ref1[0], oldt = _ref1[1];
           last_tag_indent = ((_ref2 = tag_stack[tag_stack.length - 1]) != null ? _ref2[0] : void 0) || 0;
           content.push("</" + oldt + ">");
         }
-        while (tag_stack.length > 0 && pos < last_tag_indent) {
-          needs_space = false;
+        if (tag_stack.length > 0 && pos === last_tag_indent) {
           _ref3 = tag_stack.pop(), oldp = _ref3[0], oldt = _ref3[1];
           last_tag_indent = ((_ref4 = tag_stack[tag_stack.length - 1]) != null ? _ref4[0] : void 0) || 0;
           content.push("</" + oldt + ">");
