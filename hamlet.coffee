@@ -106,7 +106,7 @@ this.Hamlet.toHtml = (html) ->
           if tag_attrs.length == 0
             content.push( "<#{tag_name}>")
           else
-            content.push( "<#{tag_name}" +
+            content.push( "<#{tag_name} " +
               join_attrs(parse_attrs(tag_attrs)) + ">"
             )
 
@@ -168,5 +168,6 @@ parse_attrs = (html) ->
   attrs
 
 join_attrs = (attrs) ->
-  for attr in attrs
-    " " + attr[0] + '="' + attr[1] + '"'
+  (for attr in attrs
+    attr[0] + '="' + attr[1] + '"'
+  ).join(' ')

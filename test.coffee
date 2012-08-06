@@ -5,6 +5,9 @@ t = (a, b) =>
     console.log("from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h)
     process.exit(1) if process && process.exit
 
+t('<div ng-controller="Controller" class="klass"></div>',
+  "<.klass ng-controller=Controller>")
+###
 t("<div></div>", "<div>")
 t('<span>%{foo}</span>', '<span>%{foo}')
 
@@ -76,3 +79,4 @@ interp = =>
     console.log("Fail: " + r)
 
 interp()
+###
