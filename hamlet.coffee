@@ -104,12 +104,19 @@ this.Hamlet.toHtml = (html) ->
           tag_name = tag_portion.substring(0, si)
           tag_attrs = tag_portion.substring(si)
 
-        if tag_name[0] == '#'
-          parsed_tag_attrs = ["id", tag_name.substring(1)]
-          tag_name = "div"
-        if tag_name[0] == '.'
-          parsed_tag_attrs = ["class", tag_name.substring(1).split('.').join(' ')]
-          tag_name = "div"
+        [tag_name, ids...] = tag_name.split('#')
+        unless ids.length == 0
+          throw("found multiple ids: " + ids.join(',')) if ids.length > 1
+          [id, classes...] = ids[0].split('.')
+          unless classes.length == 0
+            tag_name = tag_name + '.' + classes.join('.')
+          parsed_tag_attrs.push(["id", id])
+
+        [tag_name, classes...] = tag_name.split('.')
+        unless classes.length == 0
+          parsed_tag_attrs.push(["class", classes.join(' ')])
+
+        tag_name = "div" if tag_name == ""
 
         if emptyTags[tag_name]
           content.push("<#{tag_name}/>")
@@ -122,7 +129,7 @@ this.Hamlet.toHtml = (html) ->
           else
             content.push( "<#{tag_name} " +
               join_attrs(
-                (if parsed_tag_attrs.length == 0 then [] else [parsed_tag_attrs]).concat(parse_attrs(tag_attrs))
+                (if parsed_tag_attrs.length == 0 then [] else parsed_tag_attrs).concat(parse_attrs(tag_attrs))
               ) + ">"
             )
 

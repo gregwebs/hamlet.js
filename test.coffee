@@ -6,6 +6,18 @@ t = (a, b) =>
     process.exit(1) if process && process.exit
 
 
+# id and class shortcut next to tag with no spaces
+t '<a id="btn" class="watchlist" href="#">Add to Favorites</a>', """
+<a#btn.watchlist href="#">
+  Add to Favorites
+"""
+
+# class shortcut next to tag with no spaces
+t '<a class="btn-watchlist" href="#">Add to Favorites</a>', """
+<a.btn-watchlist href="#">
+  Add to Favorites
+"""
+
 # multiple classes
 t '<div class="foo bar"></div>', """
 <.foo.bar>
@@ -15,6 +27,12 @@ t '<div class="foo bar"></div>', """
 t '<p class="foo.bar"><div id="bar">baz</div></p>', """
 <p class=foo.bar
   <#bar>baz
+"""
+
+# id shortcut next to tag with no spaces
+t '<a id="btn-watchlist" href="#">Add to Favorites</a>', """
+<a#btn-watchlist href="#">
+  Add to Favorites
 """
 
 # basic tests
