@@ -25,7 +25,7 @@ this.Hamlet.templateSettings = {
 };
 
 this.Hamlet.toHtml = function(html) {
-  var content, delete_comment, innerHTML, last_tag_indent, line, needs_space, oldp, oldt, pos, push_innerHTML, si, tag_attrs, tag_name, tag_portion, tag_stack, ti, unindented, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+  var content, delete_comment, innerHTML, last_tag_indent, line, needs_space, oldp, oldt, parsed_tag_attrs, pos, push_innerHTML, si, tag_attrs, tag_name, tag_portion, tag_stack, ti, unindented, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
   content = [];
   tag_stack = [];
   last_tag_indent = 0;
@@ -62,15 +62,20 @@ this.Hamlet.toHtml = function(html) {
 
     } else {
       if (pos <= last_tag_indent) {
-        while (tag_stack.length > 0 && pos < last_tag_indent) {
-          needs_space = false;
+        if (tag_stack.length > 0 && pos === last_tag_indent) {
           _ref1 = tag_stack.pop(), oldp = _ref1[0], oldt = _ref1[1];
           last_tag_indent = ((_ref2 = tag_stack[tag_stack.length - 1]) != null ? _ref2[0] : void 0) || 0;
           content.push("</" + oldt + ">");
         }
-        if (tag_stack.length > 0 && pos === last_tag_indent) {
+        while (tag_stack.length > 0 && pos < last_tag_indent) {
+          needs_space = false;
           _ref3 = tag_stack.pop(), oldp = _ref3[0], oldt = _ref3[1];
           last_tag_indent = ((_ref4 = tag_stack[tag_stack.length - 1]) != null ? _ref4[0] : void 0) || 0;
+          content.push("</" + oldt + ">");
+        }
+        if (tag_stack.length > 0 && pos === last_tag_indent) {
+          _ref5 = tag_stack.pop(), oldp = _ref5[0], oldt = _ref5[1];
+          last_tag_indent = ((_ref6 = tag_stack[tag_stack.length - 1]) != null ? _ref6[0] : void 0) || 0;
           content.push("</" + oldt + ">");
         }
       }
@@ -97,6 +102,7 @@ this.Hamlet.toHtml = function(html) {
           innerHTML = unindented.substring(ti + 1);
         }
         tag_attrs = "";
+        parsed_tag_attrs = [];
         tag_name = tag_portion;
         si = indexOf(tag_portion, ' ');
         if (si != null) {
@@ -104,21 +110,21 @@ this.Hamlet.toHtml = function(html) {
           tag_attrs = tag_portion.substring(si);
         }
         if (tag_name[0] === '#') {
-          tag_attrs = "id=" + tag_name.substring(1) + tag_attrs;
+          parsed_tag_attrs = ["id", tag_name.substring(1)];
           tag_name = "div";
         }
         if (tag_name[0] === '.') {
-          tag_attrs = "class=" + tag_name.substring(1) + tag_attrs;
+          parsed_tag_attrs = ["class", tag_name.substring(1).split('.').join(' ')];
           tag_name = "div";
         }
         if (emptyTags[tag_name]) {
           content.push("<" + tag_name + "/>");
         } else {
           tag_stack.push([last_tag_indent, tag_name]);
-          if (tag_attrs.length === 0) {
+          if (tag_attrs.length === 0 && parsed_tag_attrs.length === 0) {
             content.push("<" + tag_name + ">");
           } else {
-            content.push(("<" + tag_name + " ") + join_attrs(parse_attrs(tag_attrs)) + ">");
+            content.push(("<" + tag_name + " ") + join_attrs((parsed_tag_attrs.length === 0 ? [] : [parsed_tag_attrs]).concat(parse_attrs(tag_attrs))) + ">");
           }
           if (innerHTML.length !== 0) {
             push_innerHTML(innerHTML);
@@ -128,7 +134,7 @@ this.Hamlet.toHtml = function(html) {
     }
   }
   while (tag_stack.length > 0) {
-    _ref5 = tag_stack.pop(), oldp = _ref5[0], oldt = _ref5[1];
+    _ref7 = tag_stack.pop(), oldp = _ref7[0], oldt = _ref7[1];
     content.push("</" + oldt + ">");
   }
   return content.join("");
@@ -168,7 +174,7 @@ parse_attrs = function(html) {
   html.replace(attrMatch, function(match, name) {
     var val, value;
     if (match[0] === ".") {
-      classes.push(name);
+      classes = classes.concat(name.split('.'));
     } else {
       value = match[0] === "#" ? (val = name, name = "id", val) : arguments[2] || arguments[3] || arguments[4] || (fillAttrs[name] ? name : "");
       if (name === "class") {

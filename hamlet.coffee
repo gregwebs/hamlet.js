@@ -58,6 +58,11 @@ this.Hamlet.toHtml = (html) ->
 
     else
       if pos <= last_tag_indent
+        if tag_stack.length > 0 and pos == last_tag_indent
+          [oldp, oldt] = tag_stack.pop()
+          last_tag_indent = tag_stack[tag_stack.length - 1]?[0] || 0
+          content.push("</#{oldt}>")
+
         while tag_stack.length > 0 and pos < last_tag_indent
           needs_space = false
           [oldp, oldt] = tag_stack.pop()
@@ -92,6 +97,7 @@ this.Hamlet.toHtml = (html) ->
           innerHTML = unindented.substring(ti + 1)
 
         tag_attrs = ""
+        parsed_tag_attrs = []
         tag_name = tag_portion
         si = indexOf(tag_portion, ' ')
         if si?
@@ -99,10 +105,10 @@ this.Hamlet.toHtml = (html) ->
           tag_attrs = tag_portion.substring(si)
 
         if tag_name[0] == '#'
-          tag_attrs = "id=" + tag_name.substring(1) + tag_attrs
+          parsed_tag_attrs = ["id", tag_name.substring(1)]
           tag_name = "div"
         if tag_name[0] == '.'
-          tag_attrs = "class=" + tag_name.substring(1) + tag_attrs
+          parsed_tag_attrs = ["class", tag_name.substring(1).split('.').join(' ')]
           tag_name = "div"
 
         if emptyTags[tag_name]
@@ -110,11 +116,14 @@ this.Hamlet.toHtml = (html) ->
         else
           tag_stack.push([last_tag_indent, tag_name])
 
-          if tag_attrs.length == 0
+
+          if tag_attrs.length == 0 && parsed_tag_attrs.length == 0
             content.push( "<#{tag_name}>")
           else
             content.push( "<#{tag_name} " +
-              join_attrs(parse_attrs(tag_attrs)) + ">"
+              join_attrs(
+                (if parsed_tag_attrs.length == 0 then [] else [parsed_tag_attrs]).concat(parse_attrs(tag_attrs))
+              ) + ">"
             )
 
           unless innerHTML.length == 0
@@ -149,7 +158,7 @@ parse_attrs = (html) ->
   # TODO: more efficient function then replace? we don't need to replace
   html.replace attrMatch, (match, name) ->
     if match[0] == "."
-      classes.push( name )
+      classes = classes.concat( name.split('.') )
     else
       value = if match[0] == "#"
         val = name
