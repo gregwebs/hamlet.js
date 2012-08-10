@@ -26,7 +26,7 @@ this.Hamlet.templateSettings = {
 };
 
 this.Hamlet.toHtml = function(html) {
-  var classes, content, delete_comment, id, ids, innerHTML, last_tag_indent, line, needs_space, oldp, oldt, parsed_tag_attrs, pos, push_innerHTML, si, tag_attrs, tag_name, tag_portion, tag_stack, ti, unindented, _i, _len, _ref, _ref1, _ref10, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+  var attrs, class_attr, classes, content, delete_comment, id, id_attr, ids, innerHTML, last_tag_indent, line, needs_space, oldp, oldt, pos, push_innerHTML, si, tag_attrs, tag_name, tag_portion, tag_stack, ti, unindented, _i, _len, _ref, _ref1, _ref10, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
   content = [];
   tag_stack = [];
   last_tag_indent = 0;
@@ -103,7 +103,8 @@ this.Hamlet.toHtml = function(html) {
           innerHTML = unindented.substring(ti + 1);
         }
         tag_attrs = "";
-        parsed_tag_attrs = [];
+        id_attr = null;
+        class_attr = null;
         tag_name = tag_portion;
         si = indexOf(tag_portion, ' ');
         if (si != null) {
@@ -119,11 +120,11 @@ this.Hamlet.toHtml = function(html) {
           if (classes.length !== 0) {
             tag_name = tag_name + '.' + classes.join('.');
           }
-          parsed_tag_attrs.push(["id", id]);
+          id_attr = id;
         }
         _ref9 = tag_name.split('.'), tag_name = _ref9[0], classes = 2 <= _ref9.length ? __slice.call(_ref9, 1) : [];
         if (classes.length !== 0) {
-          parsed_tag_attrs.push(["class", classes.join(' ')]);
+          class_attr = classes;
         }
         if (tag_name === "") {
           tag_name = "div";
@@ -132,10 +133,14 @@ this.Hamlet.toHtml = function(html) {
           content.push("<" + tag_name + "/>");
         } else {
           tag_stack.push([last_tag_indent, tag_name]);
-          if (tag_attrs.length === 0 && parsed_tag_attrs.length === 0) {
+          if (tag_attrs.length === 0 && !id_attr && (class_attr || []).length === 0) {
             content.push("<" + tag_name + ">");
           } else {
-            content.push(("<" + tag_name + " ") + join_attrs((parsed_tag_attrs.length === 0 ? [] : parsed_tag_attrs).concat(parse_attrs(tag_attrs))) + ">");
+            attrs = parse_attrs(tag_attrs, class_attr);
+            if (id_attr) {
+              attrs.unshift(["id", id_attr]);
+            }
+            content.push("<" + tag_name + " " + (join_attrs(attrs)) + ">");
           }
           if (innerHTML.length !== 0) {
             push_innerHTML(innerHTML);
@@ -178,10 +183,10 @@ fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohre
 
 emptyTags = makeMap("area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed");
 
-parse_attrs = function(html) {
-  var attrs, classes;
+parse_attrs = function(html, classes) {
+  var attrs;
   attrs = [];
-  classes = [];
+  classes || (classes = []);
   html.replace(attrMatch, function(match, name) {
     var val, value;
     if (match[0] === ".") {
@@ -196,7 +201,7 @@ parse_attrs = function(html) {
     }
   });
   if (classes.length > 0) {
-    attrs.push(["class", classes.join(" ")]);
+    attrs.unshift(["class", classes.join(" ")]);
   }
   return attrs;
 };

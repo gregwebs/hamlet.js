@@ -5,6 +5,10 @@ t = (a, b) =>
     console.log("from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h)
     process.exit(1) if process && process.exit
 
+# class shortcut and class attribute
+t '<div class="guide-entry {{zebra(episode)}}"></div>', """
+<.guide-entry class="{{zebra(episode)}}">
+"""
 
 # id and class shortcut next to tag with no spaces
 t '<a id="btn" class="watchlist" href="#">Add to Favorites</a>', """
@@ -41,7 +45,7 @@ t('<span>%{foo}</span>', '<span>%{foo}')
 
 
 # multiple tags at same level
-t('<div class="actions bottom-row"><a href="#" class="like">Like</a></div><div class="likes bottom-row"><a href="#" class="likes">387 people</a> like this</a></div>',"""
+t('<div class="actions bottom-row"><a class="like" href="#">Like</a></div><div class="likes bottom-row"><a class="likes" href="#">387 people</a> like this</a></div>',"""
 <div class="actions bottom-row">
     <a class="like" href="#">Like
 <div class="likes bottom-row">
@@ -49,7 +53,7 @@ t('<div class="actions bottom-row"><a href="#" class="like">Like</a></div><div c
 """)
 
 # html entities
-t('<a href="{{fb_item_link(feed)}}" target="blank" class="open-post">&#8599;</a>',
+t('<a class="open-post" href="{{fb_item_link(feed)}}" target="blank">&#8599;</a>',
     '<a class="open-post" href="{{fb_item_link(feed)}}" target="blank">&#8599;'
 )
 

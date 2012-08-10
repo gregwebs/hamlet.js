@@ -97,7 +97,8 @@ this.Hamlet.toHtml = (html) ->
           innerHTML = unindented.substring(ti + 1)
 
         tag_attrs = ""
-        parsed_tag_attrs = []
+        id_attr = null
+        class_attr = null
         tag_name = tag_portion
         si = indexOf(tag_portion, ' ')
         if si?
@@ -110,11 +111,11 @@ this.Hamlet.toHtml = (html) ->
           [id, classes...] = ids[0].split('.')
           unless classes.length == 0
             tag_name = tag_name + '.' + classes.join('.')
-          parsed_tag_attrs.push(["id", id])
+          id_attr = id
 
         [tag_name, classes...] = tag_name.split('.')
         unless classes.length == 0
-          parsed_tag_attrs.push(["class", classes.join(' ')])
+          class_attr = classes
 
         tag_name = "div" if tag_name == ""
 
@@ -124,14 +125,12 @@ this.Hamlet.toHtml = (html) ->
           tag_stack.push([last_tag_indent, tag_name])
 
 
-          if tag_attrs.length == 0 && parsed_tag_attrs.length == 0
+          if tag_attrs.length == 0 && !id_attr && (class_attr || []).length == 0
             content.push( "<#{tag_name}>")
           else
-            content.push( "<#{tag_name} " +
-              join_attrs(
-                (if parsed_tag_attrs.length == 0 then [] else parsed_tag_attrs).concat(parse_attrs(tag_attrs))
-              ) + ">"
-            )
+            attrs = parse_attrs(tag_attrs, class_attr)
+            attrs.unshift ["id", id_attr] if id_attr
+            content.push( "<#{tag_name} #{join_attrs(attrs)}>" )
 
           unless innerHTML.length == 0
             push_innerHTML(innerHTML)
@@ -159,9 +158,9 @@ fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohre
 
 emptyTags = makeMap("area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed")
 
-parse_attrs = (html) ->
+parse_attrs = (html, classes) ->
   attrs = []
-  classes = []
+  classes ||= []
   # TODO: more efficient function then replace? we don't need to replace
   html.replace attrMatch, (match, name) ->
     if match[0] == "."
@@ -186,7 +185,7 @@ parse_attrs = (html) ->
     return
 
   if classes.length > 0
-    attrs.push(["class", classes.join(" ")])
+    attrs.unshift(["class", classes.join(" ")])
 
   attrs
 
