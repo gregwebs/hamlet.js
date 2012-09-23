@@ -114,20 +114,24 @@ White space is automatically added *after* tags with inner text. If you have mul
 ``` html
 <p><b>no space</b>none here either.  Two spaces after a period is bad!</p>
 ```
-## Don't tell anyone :)
 
-,  the '>' character is optional if there is no inner content on that line. There can still can be inner content on the next line. I don't tout this because some of those used to html don't find it aesthetically pleasing. But don't let anyone tell you that HAML has one less character :)
+## Closing bracket
+
+currently  the '>' character is optional if there is no inner text on the same line. In the future this will be changed to be required so that tag attributes can span multiple lines.
 
 ## Limitations
 
-I just created it - haven't used it much yet. I do have test cases, but let me know if you encounter any issues.
-I still consider the interpolation and white space syntax experimental - let me know if you have better ideas.
+Hamlet just uses a simple eval interpolation.
+This works well for me on an AngularJS project where AngularJS is actually doing the templating.
+You might be able to use Hamlet to pre-process for another templating system.
 
 # Development 
 
 Requires Coffeescript, although if you are only comfortable changing js I can easily port it to the Coffeescript file.
 
 ## Testing
+
+The test suite is pretty good now. I create a test case for every issue I notice.
 
 I wanted to run tests without the browser overhead. Probably there is a better way, but I came up with this which works fine:
 
@@ -137,10 +141,3 @@ You could run the tests in a browser or elsewhere though.
 Note it requires coffee: `npm install coffee-script && ln -s node_modules/coffee-script/bin/coffee coffee`
 
 Test cases can be ported from [the Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
-
-# TODO
-
-* Add conditional attribute syntax
-
-    <p :isRed:style="color:red">
-    <input type=checkbox :isChecked:checked>

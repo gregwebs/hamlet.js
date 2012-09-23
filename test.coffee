@@ -74,10 +74,15 @@ t "<div>foo bar</div>", """
   bar
 """
 
-t "<div>foo<span>bar</span></div>", """
-<div>
-  foo
-  ><span>bar
+# tag spacing lines of text - this doesn't seem correct really :)
+t "<ul><li><a>foo</a> <a>foo2</a></li><li><a>bar</a></li></ul>", """
+<ul>
+  <li>
+    <a>foo
+    <a>foo2
+  <li>
+    <a>
+      bar
 """
 
 t '<p>You are logged in as <i>Greg</i> <b>Weber</b>, <a href="/logout">logout</a>.</p><p>Multi line paragraph.</p>', """
