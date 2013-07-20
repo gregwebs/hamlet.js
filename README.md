@@ -5,7 +5,7 @@ The big deal is that it uses your white space to automatically close tags.
 You already properly indent your tags right?
 Computers are supposed to automate things - lets have them close tags for us.
 
-This is similar in concept to HAML. However, HAML abandons html syntax without justification. If we just apply significant white-space and a few other html-compatible shortcuts to regular HTML, we can get the benefit without the drawback. Designers that have used the Haskell version of Hamlet have really liked it.
+This is similar in concept to HAML or jade. However, HAML and jade abandons html syntax without justification. If we just apply significant white-space and a few other html-compatible shortcuts to regular HTML, we can get the benefit without the drawback. Designers that have used the Haskell version of Hamlet have really liked it.
 
 I created this with client-side templates in mind, but it works server side with node.js
 
@@ -54,7 +54,7 @@ It is just HTML! But redundancies are taken away
 * quoting attributes is not required unless they have spaces
 * Indentation is used to automatically close tags.
 
-This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/templates) template language that I helped design. This implementation is simpler because it is invoked at runtime, just does a simple javascript eval, and has no concept of type insertion - this includes no html escaping.
+This loosely follows the original Haskell [Hamlet](http://www.yesodweb.com/book/templates) template language that I helped design. This implementation is simpler because it is invoked at runtime, just does a simple javascript eval, and has no concept of type insertion - this includes no html escaping. There is a [fork of this library](https://github.com/ajnsit/hamlet.js) that uses Haskell Hamlet style interpolation.
 
 ## Usage
 
@@ -138,6 +138,30 @@ I wanted to run tests without the browser overhead. Probably there is a better w
     coffee -cb hamlet.coffee && coffee -cb test.coffee && cp hamlet.js runtests.js && cat test.js >> runtests.js && node runtests.js && echo "PASS" || echo "FAIL"
 
 You could run the tests in a browser or elsewhere though.
-Note it requires coffee: `npm install coffee-script && ln -s node_modules/coffee-script/bin/coffee coffee`
+Note it requires coffee
+
+    npm install coffee-script && ln -s node_modules/coffee-script/bin/coffee coffee
 
 Test cases can be ported from [the Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
+
+
+## Converting from jade
+
+If there are no variables interpreted in your jade, you can compile it down to html
+
+    > jade.compile('test(attr="val") text', {debug:false, compileDebug:false, pretty:true, client:true})()
+    '\n<test a="val">wtf</test>'
+
+TODO: If there are variables, is there a way to set every variable value to `{{variable}}` ?
+
+## Converting from html
+
+One of the great things about Hamlet is that for a small amount of HTML, you can just delete the closing tags.
+
+There is a Haskell tool `html2hamlet` (install Haskell, then cabal install html2hamlet)
+
+    ❯ echo '\n<test a="val">text</test>' | ./cabal-dev/bin/html2hamlet
+    !!!
+    <test a="val">
+      text
+
