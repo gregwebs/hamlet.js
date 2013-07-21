@@ -1,6 +1,6 @@
 { "name": "hamlet"
 , "description": "Hamlet template engine"
-, "version": "0.1.0"
+, "version": "0.1.1"
 , "author": "Greg Weber <greg@gregweber.info>"
 , "repository": "git://github.com/gregwebs/hamlet.js"
 , "main": "./hamlet.js"
