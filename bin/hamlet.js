@@ -14,7 +14,7 @@ var fs = require('fs')
   , join = path.join
   , monocle = require('monocle')()
   , mkdirp = require('mkdirp')
-  , hamlet = require('../');
+  , hamlet = require('../lib/hamlet').hamlet;
 
 // hamlet options
 
@@ -119,7 +119,7 @@ function stdin() {
   process.stdin.setEncoding('utf8');
   process.stdin.on('data', function(chunk){ buf += chunk; });
   process.stdin.on('end', function(){
-    process.stdout.write(hamlet(buf, {}));
+    process.stdout.write(hamlet(buf, {}) + "\n");
   }).resume();
 }
 
