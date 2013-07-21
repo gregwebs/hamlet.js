@@ -77,6 +77,22 @@ Or you can avoid all variable assertion and just expand hamlet with:
 Hamlet.toHtml('<p>') // "<p></p>"
 ```
 
+### nodejs
+
+var hamlet = require('hamlet').hamlet
+
+``` js
+hamlet('<p>') // "<p></p>"
+```
+
+There is also a command line program `bin/hamlet.js`. It is not listed in package.json due to some weird install issues.
+Similarly, the dependencies for that program are listed in the devDependencies.
+
+
+### Express
+
+It should work with the '.hamlet' extension.
+
 ## class/id shortcuts
 
 The CSS-based shortcuts are originally taken from the HAML markup language.
