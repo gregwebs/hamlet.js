@@ -1,0 +1,18 @@
+{ "name": "hamlet"
+, "description": "Hamlet template engine"
+, "version": "0.0.0"
+, "author": "Greg Weber <greg@gregweber.info>"
+, "repository": "git://github.com/gregwebs/hamlet.js"
+, "main": "./hamlet.js"
+, "bin": { "jade": "./bin/jade" }
+, "dependencies": { }
+, "devDependencies": { "coffee-script": "*" }
+, "component": { "scripts": { "hamlet": "hamlet.js" } }
+, "scripts":
+    { "test": "cat hamlet.coffee | coffee -csb > lib/hamlet.js && coffee -cb test.coffee && node test.js && echo 'PASS' || echo 'FAIL'"
+    , "prepublish": "npm prune && npm run build"
+    , "build": "npm run compile"
+    , "compile": "cat hamlet.coffee | coffee -csb > lib/hamlet.js && cat lib/hamlet.js express.js >> hamlet.js"
+    }
+, "browser": { "./lib/hamlet.js": "./lib/hamlet.js" }
+}

@@ -131,18 +131,13 @@ Requires Coffeescript, although if you are only comfortable changing js I can ea
 
 ## Testing
 
-The test suite is pretty good now. I create a test case for every issue I notice.
+The test suite is pretty good now. I create a regression test for every issue I notice.
 
-I wanted to run tests without the browser overhead. Probably there is a better way, but I came up with this which works fine:
+    npm test
 
-    coffee -cb hamlet.coffee && coffee -cb test.coffee && cp hamlet.js runtests.js && cat test.js >> runtests.js && node runtests.js && echo "PASS" || echo "FAIL"
+You can run the tests in a browser or elsewhere though.
 
-You could run the tests in a browser or elsewhere though.
-Note it requires coffee
-
-    npm install coffee-script && ln -s node_modules/coffee-script/bin/coffee coffee
-
-Test cases can be ported from [the Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
+Test cases can be ported from the [Haskell Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
 
 
 ## Converting from jade

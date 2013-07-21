@@ -4,7 +4,7 @@
 
 # this one javascript function is _.template from underscore.js, MIT license
 # remove escape and evaluate, just use interpolate   
-this.Hamlet = `function(str, data){
+Hamlet = `function(str, data){
     var c  = Hamlet.templateSettings;
     str = Hamlet.toHtml(str);
     var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
@@ -24,11 +24,11 @@ this.Hamlet = `function(str, data){
 `
 
 
-this.Hamlet.templateSettings = {
+Hamlet.templateSettings = {
   interpolate    : /\{\{([\s\S]+?)\}\}/g,
 }
 
-this.Hamlet.toHtml = (html) ->
+Hamlet.toHtml = (html) ->
   content = []
   tag_stack = []
   last_tag_indent = 0
@@ -135,6 +135,8 @@ this.Hamlet.toHtml = (html) ->
           unless innerHTML.length == 0
             push_innerHTML(innerHTML)
 
+    undefined
+
   while tag_stack.length > 0
     [oldp, oldt] = tag_stack.pop()
     content.push("</#{oldt}>")
@@ -151,6 +153,7 @@ makeMap = (str) ->
     items = str.split(",")
     for i in items
         obj[ items[i] ] = true
+        undefined
     return obj
 
 attrMatch = /(?:\.|#)?([-A-Za-z0-9_]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g
@@ -193,3 +196,6 @@ join_attrs = (attrs) ->
   (for attr in attrs
     attr[0] + '="' + attr[1] + '"'
   ).join(' ')
+
+if exports
+  exports.hamlet = Hamlet

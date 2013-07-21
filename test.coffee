@@ -1,4 +1,5 @@
-Hamlet = this.Hamlet
+Hamlet = require('./lib/hamlet').hamlet
+
 t = (a, b) =>
   h = Hamlet.toHtml(b).replace(/\n/g, " ")
   if a != h
