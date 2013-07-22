@@ -1,4 +1,4 @@
-Hamlet = require('./lib/hamlet').hamlet
+Hamlet = require('../lib/hamlet').hamlet
 
 t = (a, b) =>
   h = Hamlet.toHtml(b).replace(/\n/g, " ")
@@ -110,7 +110,7 @@ t '<p>No close bracket</p> <p>No close</p>', '''
     No close
 '''
 
-t '<img></img><p>No close</p>', '''
+t '<img/><p>No close</p>', '''
   <img
   <p
     No close
@@ -124,12 +124,18 @@ t '<p><b>no space</b>none here either.  Two spaces after a period is bad!</p>', 
 '''
 
 interp = =>
-  r = Hamlet('{{foo}} {{bar}}',
+  tpl = """
+<p>para
+  <span>\#{foo} \#{bar}
+"""
+
+  r = Hamlet(tpl, {
     foo : "a"
     bar : "b"
-  )
-  unless "a b" == r
+  })
+  unless "<p>para <span>a b</span></p>" == r
     console.log("Fail: " + r)
+    process.exit(1) if process && process.exit
 
 interp()
 ###

@@ -2,9 +2,10 @@
 # Re-uses some code from HTML Parser By John Resig (ejohn.org)
 # * LICENSE: Mozilla Public License
 
+###
 # this one javascript function is _.template from underscore.js, MIT license
 # remove escape and evaluate, just use interpolate   
-Hamlet = `function(str, data){
+Hamlet = function(str, data){
     var c  = Hamlet.templateSettings;
     str = Hamlet.toHtml(str);
     var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
@@ -18,14 +19,104 @@ Hamlet = `function(str, data){
          .replace(/\n/g, '\\n')
          .replace(/\t/g, '\\t')
          + "');}return __p.join('');";
-    var func = new Function('obj', tmpl);
+    var func
+    try {
+      func = new Function('obj', tmpl);
+    } catch (e) {
+      console.log(tmpl.replace(/;/g, '\n'));
+      throw(e)
+    }
     return data ? func(data) : func;
   };
+###
+
+###
+ * https://github.com/cho45/micro-template.js
+ * (c) cho45 http://cho45.github.com/mit-license
+###
+`function template(id, data) {
+  var me = arguments.callee;
+  if (!me.cache[id]) me.cache[id] = (function () {
+    var name = id
+    var string = id
+    if (/^[\w\-]+$/.test(id)) { string = me.get(id) } else { name = 'String' }
+    string = Hamlet.toHtml(string);
+    var debugInfo, line = 1, content = "", body = (
+      "try { " +
+        (me.variable ?  "var " + me.variable + " = this.stash;" : "with (this.stash) { ") +
+          "this.ret += '"  +
+          string.
+            replace(Hamlet.templateSettings.beginInterpolate, '\x11').replace(Hamlet.templateSettings.endInterpolate, '\x13').
+            replace(/'(?![^\x11\x13]+?\x13)/g, '\\x27').
+            replace(/^\s*|\s*$/g, '').
+            replace(/([^\n]*)\n/g, function (_, content) { return "';\nthis.content='" + content + "';this.line=" + (++line) + ";this.ret += '\\n" }).
+            // replace(Hamlet.templateSettings.interpolate, "' + ($1) + '") + 
+            replace(/\x11raw(.+?)\x13/g, "' + ($1) + '").
+            replace(/\x11(.+?)\x13/g, "' + this.escapeHTML($1) + '") +
+            // replace(/\x11(.+?)\x13/g, "'; $1; this.ret += '") +
+        "'; " + (me.variable ? "" : "}") + "return this.ret;" +
+      (debugInfo = "'. previous line:\\n' + this.content + '\\n(on " + name + "' + ' line ' + this.line + ')'; } ",
+        "} catch (e) { throw 'TemplateError: ' + e + " + debugInfo
+      ) +
+      "//@ sourceURL=" + name + "\n" // source map
+    ).replace(/this\.ret \+= '';/g, '');
+    var func = new Function(body);
+    var map  = { '&' : '&amp;', '<' : '&lt;', '>' : '&gt;', '\x22' : '&#x22;', '\x27' : '&#x27;' };
+    var escapeHTML = function (string) { return (''+string).replace(/[&<>\'\"]/g, function (_) { return map[_] }) };
+    return function (stash) { return func.call(me.context = { escapeHTML: escapeHTML, content: "", line: 1, ret : '', stash: stash }) };
+  })();
+  return data ? me.cache[id](data) : me.cache[id];
+};
+
+template.cache = {};
+template.get = function (id) { return document.getElementById(id).innerHTML };
+
+/**
+ * Extended template function:
+ *   requires: basic template() function
+ *   provides:
+ *     include(id)
+ *     wrapper(id, function () {})
+ */
+function extended (id, data) {
+  var fun = function (data) {
+    data.include = function (name) {
+      template.context.ret += template(name, template.context.stash);
+    };
+
+    data.wrapper = function (name, fun) {
+      var current = template.context.ret;
+      template.context.ret = '';
+      fun.apply(template.context);
+      var content = template.context.ret;
+      var orig_content = template.context.stash.content;
+      template.context.stash.content = content;
+      template.context.ret = current + template(name, template.context.stash);
+      template.context.stash.content = orig_content;
+    };
+
+    return template(id, data);
+  };
+
+  return data ? fun(data) : fun;
+}
+
+template.get = function (id) {
+  var fun = extended.get;
+  return fun ? fun(id) : document.getElementById(id).innerHTML;
+};
+this.template = template;
+this.extended = extended;
 `
 
 
+
+Hamlet = extended
 Hamlet.templateSettings = {
-  interpolate    : /\{\{([\s\S]+?)\}\}/g,
+  interpolate     : /#\{([\s\S]+?)\}\}/g,
+  beginInterpolate: /#\{/g
+  endInterpolate  : /\}/g
+  oldInterpolate  : /\{\{([\s\S]+?)\}\}/g,
 }
 
 Hamlet.toHtml = (html) ->
@@ -38,9 +129,10 @@ Hamlet.toHtml = (html) ->
     i = indexOf(s, '#')
     if !i? then s else
       sub = s.substring(0, i)
-      # let an html encoded entity pass through
-      if indexOf(s, '&#') != i - 1 then sub else
-        sub + '#' + delete_comment(s.substring(i+1))
+      if s[i+1] == "{" then sub + '#' + delete_comment(s.substring(i + 1)) else
+        # let an html encoded entity pass through
+        if s[i-1] != '&' then sub else
+          sub + '#' + delete_comment(s.substring(i+1))
 
   push_innerHTML = (str) ->
     needs_space = true
@@ -54,7 +146,7 @@ Hamlet.toHtml = (html) ->
     if unindented.length == 0
       content.push(' ')
 
-    else if unindented[0] == '#'
+    else if unindented[0] == '#' && unindented[1] != '{'
 
     else
       if pos <= last_tag_indent
@@ -148,18 +240,38 @@ indexOf = (str, substr) ->
   i = str.indexOf(substr)
   if i == -1 then null else i
 
-makeMap = (str) ->
-    obj = {}
-    items = str.split(",")
-    for i in items
-        obj[ items[i] ] = true
-        undefined
-    return obj
-
 attrMatch = /(?:\.|#)?([-A-Za-z0-9_]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g
-fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected")
-
-emptyTags = makeMap("area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed")
+fillAttrs = {
+  checked: true
+  compact: true
+  declare: true
+  defer: true
+  disabled: true
+  ismap: true
+  multiple: true
+  nohref: true
+  noresize: true
+  noshade: true
+  nowrap: true
+  readonly: true
+  selected: true
+}
+emptyTags = {
+  area: true
+  base: true
+  basefont: true
+  br: true
+  col: true
+  frame: true
+  hr: true
+  img: true
+  input: true
+  isindex: true
+  link: true
+  meta: true
+  param: true
+  embed: true
+}
 
 parse_attrs = (html, classes) ->
   attrs = []

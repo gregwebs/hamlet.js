@@ -35,7 +35,7 @@ Lets show some interpolation and CSS shortcuts:
 
 ``` html
 <.foo>
-  <span#bar data-attr={{foo}}>baz # this is a comment
+  <span#bar data-attr=#{foo}>baz # this is a comment
 ```
 
 That template invoked with: `Hamlet(template, {foo:'f'})`.  generates:
@@ -45,7 +45,8 @@ That template invoked with: `Hamlet(template, {foo:'f'})`.  generates:
 ```
 
 The library currently does not try to pretty print the resulting html, although it wouldn't be hard to do.
-Note the mustache style interpolation `{{var}}`. I have never had the opportunity to use mustache templates - this was simply easier to implement than some alternatives. You can put any javascript you would like in the interpolation.
+Note the interpolation `#{var}}`. You can use other interpolation styles by changing the RegExp Hamlet.templateSettings.interpolate.
+You can put any javascript you would like in the interpolation.
 
 ## Overview
 
@@ -151,7 +152,7 @@ The test suite is pretty good now. I create a regression test for every issue I 
 
     npm test
 
-You can run the tests in a browser or elsewhere though.
+You can run the tests in a browser by opening test/test.html and looking at the console.
 
 Test cases can be ported from the [Haskell Hamlet test suite](http://github.com/yesodweb/hamlet/hamlet/test/main.hs)
 
@@ -163,7 +164,7 @@ If there are no variables interpreted in your jade, you can compile it down to h
     > jade.compile('test(attr="val") text', {debug:false, compileDebug:false, pretty:true, client:true})()
     '\n<test a="val">wtf</test>'
 
-TODO: If there are variables, is there a way to set every variable value to `{{variable}}` ?
+TODO: If there are variables, is there a way to set every variable value to `#{variable}` ?
 
 ## Converting from html
 
@@ -176,3 +177,6 @@ There is a Haskell tool `html2hamlet` (install Haskell, then cabal install html2
     <test a="val">
       text
 
+## Thanks
+
+I wrote the parser code, but the template insertion is stolen from [micro-template](https://github.com/cho45/micro-template.js) and express integration from jade.
