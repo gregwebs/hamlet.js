@@ -3,7 +3,7 @@ Hamlet = require('../lib/hamlet').hamlet
 t = (a, b) =>
   h = Hamlet.toHtml(b).replace(/\n/g, " ")
   if a != h
-    console.log("from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h)
+    console.log("FAIL: from:\n" + b + "\n\nnot equal:\n" + a + "\n" + h)
     process.exit(1) if process && process.exit
 
 # class shortcut and class attribute
@@ -123,19 +123,70 @@ t '<p><b>no space</b>none here either.  Two spaces after a period is bad!</p>', 
   >  Two spaces after a period is bad!
 '''
 
-interp = =>
-  tpl = """
+assert = (equality, msg) ->
+  unless equality
+    console.log(msg)
+    process.exit(1) if process && process.exit
+
+interp = (tpl, result, vars) ->
+  r = Hamlet(tpl, vars)
+  assert(result == r, "FAIL: expected: " + result + "\ngot: " + r)
+
+tpl = """
 <p>para
   <span>\#{foo} \#{bar}
 """
 
-  r = Hamlet(tpl, {
+interp tpl, "<p>para\n<span>a b</span></p>", {
     foo : "a"
     bar : "b"
-  })
-  unless "<p>para <span>a b</span></p>" == r
-    console.log("Fail: " + r)
-    process.exit(1) if process && process.exit
+  }
 
-interp()
-###
+interp "<p>\#{fn('bar')}", "<p>baz</p>", {fn:() => 'baz' }
+interp "<p>\#{ }", "<p></p>", {}
+interp "<p>\#{}", "<p></p>", {}
+
+
+
+assertException = (ex_str, triggersEx) ->
+  try
+    triggersEx()
+    assert(false, "expected an exception")
+  catch ex
+    assert(ex.toString() == ex_str.toString(), "expected:\n" + ex.toString() + "\nunexpected exception:\n" + ex.toString())
+
+tpl = """
+<p>text1
+<p>text2
+<p>text3
+<p>text4
+<div>
+  <p>\#{ 1;2 }
+    <span>bar
+<p>text5
+<p>text6
+<p>text7
+<p>text8
+"""
+
+ex_str = """
+TemplateError: SyntaxError: Unexpected token ;
+line: <div><p>#{ 1;2 }
+"""
+
+# for some reason strings are not ==
+# assertException(ex_str, () => interp tpl, "<p></p>", {})
+
+ex_str = """
+TemplateError: ReferenceError: doesnotexist is not defined. previous line:
+<p>text1</p>
+(on String line 2)
+"""
+tpl = """
+<p>text1
+<p>\#{ doesnotexist() }
+<p>text2
+<p>text3
+"""
+assertException(ex_str, () => interp tpl, "<p>text</p>\n<p></p>", {})
+

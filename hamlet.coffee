@@ -1,34 +1,6 @@
-# * Hamlet Html Templates for javascript. http://www.yesodweb.com/book/templates
+# * Hamlet Html Templates for javascript. http://www.github.com/gregwebs/hamlet.js
 # Re-uses some code from HTML Parser By John Resig (ejohn.org)
 # * LICENSE: Mozilla Public License
-
-###
-# this one javascript function is _.template from underscore.js, MIT license
-# remove escape and evaluate, just use interpolate   
-Hamlet = function(str, data){
-    var c  = Hamlet.templateSettings;
-    str = Hamlet.toHtml(str);
-    var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
-      'with(obj||{}){__p.push(\'' +
-      str.replace(/\\/g, '\\\\')
-         .replace(/'/g, "\\'")
-         .replace(c.interpolate, function(match, code) {
-           return "'," + code.replace(/\\'/g, "'") + ",'";
-         })
-         .replace(/\r/g, '\\r')
-         .replace(/\n/g, '\\n')
-         .replace(/\t/g, '\\t')
-         + "');}return __p.join('');";
-    var func
-    try {
-      func = new Function('obj', tmpl);
-    } catch (e) {
-      console.log(tmpl.replace(/;/g, '\n'));
-      throw(e)
-    }
-    return data ? func(data) : func;
-  };
-###
 
 ###
  * https://github.com/cho45/micro-template.js
@@ -40,29 +12,56 @@ Hamlet = function(str, data){
     var name = id
     var string = id
     if (/^[\w\-]+$/.test(id)) { string = me.get(id) } else { name = 'String' }
-    string = Hamlet.toHtml(string);
-    var debugInfo, line = 1, content = "", body = (
-      "try { " +
-        (me.variable ?  "var " + me.variable + " = this.stash;" : "with (this.stash) { ") +
-          "this.ret += '"  +
-          string.
+    var debugInfo, line = 1, content = "";
+
+    // console.log( Hamlet.toHtml(string) )
+    var stringOrig = Hamlet.toHtml(string)
+    string = stringOrig.
             replace(Hamlet.templateSettings.beginInterpolate, '\x11').replace(Hamlet.templateSettings.endInterpolate, '\x13').
             replace(/'(?![^\x11\x13]+?\x13)/g, '\\x27').
             replace(/^\s*|\s*$/g, '').
-            replace(/([^\n]*)\n/g, function (_, content) { return "';\nthis.content='" + content + "';this.line=" + (++line) + ";this.ret += '\\n" }).
+            replace(/([^\n]*)\n/g, function (_, content) { return content + "';\nthis.content='" + content + "';this.line=" + (++line) + ";this.ret += '\\n" }).
             // replace(Hamlet.templateSettings.interpolate, "' + ($1) + '") + 
             replace(/\x11raw(.+?)\x13/g, "' + ($1) + '").
-            replace(/\x11(.+?)\x13/g, "' + this.escapeHTML($1) + '") +
+            // note the use of '*'. '+' would be better, but it risks leaving behind \x11 & \x13
+            replace(/\x11(.*?)\x13/g, "' + this.escapeHTML($1) + '")
             // replace(/\x11(.+?)\x13/g, "'; $1; this.ret += '") +
-        "'; " + (me.variable ? "" : "}") + "return this.ret;" +
-      (debugInfo = "'. previous line:\\n' + this.content + '\\n(on " + name + "' + ' line ' + this.line + ')'; } ",
-        "} catch (e) { throw 'TemplateError: ' + e + " + debugInfo
-      ) +
-      "//@ sourceURL=" + name + "\n" // source map
-    ).replace(/this\.ret \+= '';/g, '');
-    var func = new Function(body);
+
+    function mkFunction(string){
+      return (
+        "try { " +
+          (me.variable ?  "var " + me.variable + " = this.stash;" : "with (this.stash) { ") +
+            "this.ret += '"  + string +
+          "'; " + (me.variable ? "" : "}") + "return this.ret;" +
+        (debugInfo = "'. previous line:\\n' + this.content + '\\n(on " + name + "' + ' line ' + this.line + ')'; } ",
+          "} catch (e) { throw 'TemplateError: ' + e + " + debugInfo
+        ) +
+        "//@ sourceURL=" + name + "\n" // source map
+      ).replace(/this\.ret \+= '';/g, '');
+    }
+
+    var body = mkFunction(string)
+    var func
+    try {
+      func = new Function(body);
+    } catch (e) {
+      var errorLine = "";
+      var lines = (stringOrig + "\n").split("\n")
+      var lineLen = lines.length
+      for (i=0; i < lineLen; i++){
+        var js = (lines[i].replace(Hamlet.templateSettings.beginInterpolate, '\x11').replace(Hamlet.templateSettings.endInterpolate, '\x13').
+                replace(/\x11(.*?)\x13/g, "' + this.escapeHTML($1) + '"))
+        try {
+          new Function("'" + js + "'")
+        } catch (e) {
+          errorLine = lines[i]
+          break;
+        }
+      }
+      throw 'TemplateError: ' + e + ((!errorLine) ? "" : "\nline: " + errorLine)
+    }
     var map  = { '&' : '&amp;', '<' : '&lt;', '>' : '&gt;', '\x22' : '&#x22;', '\x27' : '&#x27;' };
-    var escapeHTML = function (string) { return (''+string).replace(/[&<>\'\"]/g, function (_) { return map[_] }) };
+    var escapeHTML = function (string) { return (string||'').toString().replace(/[&<>\'\"]/g, function (_) { return map[_] }) };
     return function (stash) { return func.call(me.context = { escapeHTML: escapeHTML, content: "", line: 1, ret : '', stash: stash }) };
   })();
   return data ? me.cache[id](data) : me.cache[id];
@@ -170,7 +169,7 @@ Hamlet.toHtml = (html) ->
         unindented = unindented.substring(1)
         needs_space = false
 
-      content.push(" ") if needs_space
+      content.push("\n") if needs_space
       needs_space = false
 
       if unindented[0] != '<'

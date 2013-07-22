@@ -125,11 +125,11 @@ White space is automatically added *after* tags with inner text. If you have mul
 <p>
   <b>no space
   >none here either.
-  >  Two spaces after a period is bad!
+  >  Two spaces after a period is bad, just use one!
 ```
 
 ``` html
-<p><b>no space</b>none here either.  Two spaces after a period is bad!</p>
+<p><b>no space</b>none here either.  Two spaces after a period is bad, just use one!</p>
 ```
 
 ## Closing bracket
