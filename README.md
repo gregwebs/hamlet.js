@@ -48,6 +48,20 @@ The library currently does not try to pretty print the resulting html, although 
 Note the interpolation `#{var}}`. You can use other interpolation styles by changing the RegExp Hamlet.templateSettings.interpolate.
 You can put any javascript you would like in the interpolation.
 
+## Important: hamlet.js is for client-heavy apps
+
+### Warning: there is no conditional html
+
+hamlet.js consists of the core hamlet language interspersed with javascript evaluation via `#{js}`.
+The only thing you can place in the javascript evaluation is something that produces a String.
+There is no way to have an `if` that may include some html if true.
+
+hamlet.js is designed for client-heavy apps that are using something like AngularJs.
+`#{}` is for simple server-side templating.
+
+The reason for this is that hamlet can recover very good error messages when used on the server side.
+Having conditionals (like jade for example) ruins error messages.
+
 ## Overview
 
 It is just HTML! But redundancies are taken away
