@@ -152,18 +152,18 @@ Hamlet.toHtml = (html) ->
         if tag_stack.length > 0 and pos == last_tag_indent
           [oldp, oldt] = tag_stack.pop()
           last_tag_indent = tag_stack[tag_stack.length - 1]?[0] || 0
-          content.push("</#{oldt}>")
+          content.push("</#{oldt}>") unless (emptyTags[oldt])
 
         while tag_stack.length > 0 and pos < last_tag_indent
           needs_space = false
           [oldp, oldt] = tag_stack.pop()
           last_tag_indent = tag_stack[tag_stack.length - 1]?[0] || 0
-          content.push("</#{oldt}>")
+          content.push("</#{oldt}>") unless (emptyTags[oldt])
 
         if tag_stack.length > 0 and pos == last_tag_indent
           [oldp, oldt] = tag_stack.pop()
           last_tag_indent = tag_stack[tag_stack.length - 1]?[0] || 0
-          content.push("</#{oldt}>")
+          content.push("</#{oldt}>") unless (emptyTags[oldt])
 
       if unindented[0] == '>'
         unindented = unindented.substring(1)
@@ -210,27 +210,27 @@ Hamlet.toHtml = (html) ->
 
         tag_name = "div" if tag_name == ""
 
-        if emptyTags[tag_name]
-          content.push("<#{tag_name}/>")
+        # if emptyTags[tag_name]
+        # content.push("<#{tag_name}/>")
+        # else
+        tag_stack.push([last_tag_indent, tag_name])
+        close_tag = if (emptyTags[tag_name]) then "/>" else ">"
+
+        if tag_attrs.length == 0 && !id_attr && (class_attr || []).length == 0
+          content.push( "<#{tag_name}#{close_tag}")
         else
-          tag_stack.push([last_tag_indent, tag_name])
+          attrs = parse_attrs(tag_attrs, class_attr)
+          attrs.unshift ["id", id_attr] if id_attr
+          content.push( "<#{tag_name} #{join_attrs(attrs)}#{close_tag}" )
 
-
-          if tag_attrs.length == 0 && !id_attr && (class_attr || []).length == 0
-            content.push( "<#{tag_name}>")
-          else
-            attrs = parse_attrs(tag_attrs, class_attr)
-            attrs.unshift ["id", id_attr] if id_attr
-            content.push( "<#{tag_name} #{join_attrs(attrs)}>" )
-
-          unless innerHTML.length == 0
-            push_innerHTML(innerHTML)
+        unless innerHTML.length == 0
+          push_innerHTML(innerHTML)
 
     undefined
 
   while tag_stack.length > 0
     [oldp, oldt] = tag_stack.pop()
-    content.push("</#{oldt}>")
+    content.push("</#{oldt}>") unless (emptyTags[oldt])
 
   content.join("")
 
