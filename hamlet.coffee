@@ -3,54 +3,58 @@
 # * LICENSE: Mozilla Public License
 
 ###
+ * template function is a modified form of micro-template
  * https://github.com/cho45/micro-template.js
  * (c) cho45 http://cho45.github.com/mit-license
 ###
-`function template(id, data) {
+`function template(id, data, options) {
   var me = arguments.callee;
-  if (!me.cache[id]) me.cache[id] = (function () {
+  options = options || {}
+  var result = me.cache[id] || (function () {
     var name = id
     var string = id
-    if (/^[\w\-]+$/.test(id)) { string = me.get(id) } else { name = 'String' }
-    var debugInfo, line = 1, content = "";
+    if (/^[\w\-]+$/.test(id)) { string = me.get(id) } else { name = options.filename || 'String' }
+    var debugInfo, lineNum = 1, line = "";
 
-    // console.log( Hamlet.toHtml(string) )
     var stringOrig = Hamlet.toHtml(string)
-    string = stringOrig.
+    // console.log( stringOrig )
+    var stringInterpSubs = stringOrig
+          .replace(Hamlet.templateSettings.beginInterpolate, '\x11')
+          .replace(Hamlet.templateSettings.endInterpolate, '\x13')
+
+    string = stringInterpSubs.
             replace(Hamlet.templateSettings.beginInterpolate, '\x11').replace(Hamlet.templateSettings.endInterpolate, '\x13').
             replace(/'(?![^\x11\x13]+?\x13)/g, '\\x27').
             replace(/^\s*|\s*$/g, '').
-            replace(/([^\n]*)\n/g, function (_, content) { return content + "';\nthis.content='" + content + "';this.line=" + (++line) + ";this.ret += '\\n" }).
+            replace(/([^\n]*)\n/g, function (_, line) { return line + "';\nthis.line='" + line + "';this.lineNum=" + (++lineNum) + ";this.ret += '\\n" }).
             // replace(Hamlet.templateSettings.interpolate, "' + ($1) + '") + 
             replace(/\x11raw(.+?)\x13/g, "' + ($1) + '").
             // note the use of '*'. '+' would be better, but it risks leaving behind \x11 & \x13
             replace(/\x11(.*?)\x13/g, "' + this.escapeHTML($1) + '")
             // replace(/\x11(.+?)\x13/g, "'; $1; this.ret += '") +
 
-    function mkFunction(string){
+    function mkFunctionBody(string){
       return (
         "try { " +
           (me.variable ?  "var " + me.variable + " = this.stash;" : "with (this.stash) { ") +
             "this.ret += '"  + string +
           "'; " + (me.variable ? "" : "}") + "return this.ret;" +
-        (debugInfo = "'. previous line:\\n' + this.content + '\\n(on " + name + "' + ' line ' + this.line + ')'; } ",
+        (debugInfo = "'. previous line:\\n' + this.line + '\\n(on " + name + "' + ' line ' + this.lineNum + ')'; } ",
           "} catch (e) { throw 'TemplateError: ' + e + " + debugInfo
         ) +
         "//@ sourceURL=" + name + "\n" // source map
       ).replace(/this\.ret \+= '';/g, '');
     }
 
-    var body = mkFunction(string)
     var func
     try {
-      func = new Function(body);
+      func = new Function(mkFunctionBody(string));
     } catch (e) {
       var errorLine = "";
-      var lines = (stringOrig + "\n").split("\n")
+      var lines = (stringInterpSubs + "\n").split("\n")
       var lineLen = lines.length
       for (i=0; i < lineLen; i++){
-        var js = (lines[i].replace(Hamlet.templateSettings.beginInterpolate, '\x11').replace(Hamlet.templateSettings.endInterpolate, '\x13').
-                replace(/\x11(.*?)\x13/g, "' + this.escapeHTML($1) + '"))
+        var js = (lines[i].replace(/\x11(.*?)\x13/g, "' + this.escapeHTML($1) + '"))
         try {
           new Function("'" + js + "'")
         } catch (e) {
@@ -62,9 +66,16 @@
     }
     var map  = { '&' : '&amp;', '<' : '&lt;', '>' : '&gt;', '\x22' : '&#x22;', '\x27' : '&#x27;' };
     var escapeHTML = function (string) { return (string||'').toString().replace(/[&<>\'\"]/g, function (_) { return map[_] }) };
-    return function (stash) { return func.call(me.context = { escapeHTML: escapeHTML, content: "", line: 1, ret : '', stash: stash }) };
+    return function (stash) { return func.call(me.context = {
+        escapeHTML: escapeHTML
+      , content: options.content // the inner content when rendering a layout
+      , line: ""
+      , lineNum: 1
+      , ret : ''
+      , stash: stash
+      }) };
   })();
-  return data ? me.cache[id](data) : me.cache[id];
+  return data ? result(data) : result;
 };
 
 template.cache = {};
