@@ -1,5 +1,4 @@
 var fs = require('fs')
-var hamlet = require('hamlet').hamlet
 
 /**
  * Strip any UTF-8 BOM off of the start of `str`, if it exists.
@@ -17,16 +16,22 @@ function stripBOM(str){
 
 
 /**
- * Compile a `Function` representation of the given jade `str`.
+ * Compile a `Function` representation of the given hamlet `str`.
+ *
+ * Options:
+ *
+ *   - `filename` filename required for `include` / `extends` and caching
+ *   - `content` inner content when rendering a layout
  *
  * @param {String} str
+ * @param {Options} str
  * @return {Function}
  * @api public
  */
 
 exports.compile = function(str, options){
   var options = options || {}
-  return hamlet(stripBOM(String(str)))
+  return template(stripBOM(String(str)), undefined, options)
 };
 
 /**
@@ -62,11 +67,21 @@ exports.render = function(str, options, fn){
   }
 
   try {
+    var m = str.match(/^\s*layout\s*(\S*)/)
+    var layout = m && m[1]
+    if (layout) { str = str.substring(m[0].length) }
+
     var path = options.filename;
     var tmpl = options.cache
       ? exports.cache[path] || (exports.cache[path] = exports.compile(str, options))
       : exports.compile(str, options);
-    fn(null, tmpl(options));
+
+    if (layout){
+      options.content = tmpl
+      exports.renderFile(m[1], options, fn)
+    } else {
+      fn(null, tmpl(options));
+    }
   } catch (err) {
     fn(err);
   }
