@@ -152,7 +152,7 @@ Hamlet.toHtml = (html) ->
         if tag_stack.length > 0 and pos == last_tag_indent
           [oldp, oldt] = tag_stack.pop()
           last_tag_indent = tag_stack[tag_stack.length - 1]?[0] || 0
-          content.push("</" + oldt + ">") unless (emptyTags[oldt])
+          content.push("</#{oldt}>") unless (emptyTags[oldt])
 
         while tag_stack.length > 0 and pos < last_tag_indent
           needs_space = false
