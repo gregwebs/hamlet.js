@@ -123,6 +123,13 @@ t '<p><b>no space</b>none here either.  Two spaces after a period is bad!</p>', 
   >  Two spaces after a period is bad!
 '''
 
+t '<template name="tmpl"><form><input required="1" type="text" name="sdfsd"/><input required="1" type="text" name="fo"/></form></template>', '''
+<template name="tmpl">
+  <form>
+      <input required="1" type="text" name="sdfsd">
+      <input required="1" type="text" name="fo">
+'''
+
 assert = (equality, msg) ->
   unless equality
     console.log(msg)
