@@ -107,6 +107,10 @@ Similarly, the dependencies for that program are listed in the devDependencies.
 
 It should work with the '.hamlet' extension.
 
+### Meteor
+
+There is an [atmosphere package](https://github.com/maxcan/meteor-hamlet-handlebars).
+
 ## class/id shortcuts
 
 The CSS-based shortcuts are originally taken from the HAML markup language.
