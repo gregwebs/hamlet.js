@@ -189,11 +189,3 @@ tpl = """
 <p>text3
 """
 assertException(ex_str, () => interp tpl, "<p>text</p>\n<p></p>", {})
-
-
-tpl = """
-layout test/layout.hamlet
-<p>
-  In the layout
-"""
-assert(Hamlet.render(tpl) == "<div><p>In the layout</p>\n</div>") 

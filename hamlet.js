@@ -28,7 +28,11 @@ function template(id, data, options) {
             // replace(Hamlet.templateSettings.interpolate, "' + ($1) + '") + 
             replace(/\x11raw(.+?)\x13/g, "' + ($1) + '").
             // note the use of '*'. '+' would be better, but it risks leaving behind \x11 & \x13
-            replace(/\x11(.*?)\x13/g, "' + this.escapeHTML($1) + '")
+            replace(/\x11(.*?)\x13/g, function(_, htmlVar){
+                return (htmlVar == 'content')
+                       ? "' + (" + htmlVar + ") + '"
+                       : "' + this.escapeHTML(" + htmlVar + ") + '"
+              })
             // replace(/\x11(.+?)\x13/g, "'; $1; this.ret += '") +
 
     function mkFunctionBody(string){
@@ -427,7 +431,7 @@ exports.render = function(str, options, fn){
       : exports.compile(str, options);
 
     if (layout){
-      options.content = tmpl
+      options.content = tmpl(options)
       exports.renderFile(m[1], options, fn)
     } else {
       fn(null, tmpl(options));

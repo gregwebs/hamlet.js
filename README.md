@@ -107,6 +107,16 @@ Similarly, the dependencies for that program are listed in the devDependencies.
 
 It should work with the '.hamlet' extension.
 
+## Layouts
+
+This uses the filesystem so it only works for nodejs.
+Just add `layout path/to/layout` at the very top of your template.
+
+Since Hamlet is designed for client-heavy usage there are no plans to support partials directly.
+
+You can of course manually create layouts or partials by first rendering an inner template and setting that as a local variable in the outer template.
+
+
 ## class/id shortcuts
 
 The CSS-based shortcuts are originally taken from the HAML markup language.
