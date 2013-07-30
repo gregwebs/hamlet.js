@@ -77,7 +77,7 @@ exports.render = function(str, options, fn){
       : exports.compile(str, options);
 
     if (layout){
-      options.content = tmpl
+      options.content = tmpl(options)
       exports.renderFile(m[1], options, fn)
     } else {
       fn(null, tmpl(options));

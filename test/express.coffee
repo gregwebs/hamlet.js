@@ -1,7 +1,14 @@
 express = require('../hamlet').__express
 
-handle = (err, str) ->
-  console.log(err)
-  console.log(str)
+assert = (equality, msg) ->
+  unless equality
+    console.log(msg)
+    process.exit(1) if process && process.exit
 
-express('test/wrapped.hamlet', {}, handle) # == "<div><p>In the layout</p>\n</div>")
+handle = (err, result) ->
+  if (err)
+    throw new Error(err)
+  expected = "<div><p>In the layout </p> </div>"
+  assert(result == expected, "FAIL: expected: " + expected + "\ngot: " + result)
+
+express('test/wrapped.hamlet', {}, handle)

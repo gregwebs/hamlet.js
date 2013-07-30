@@ -30,7 +30,11 @@
             // replace(Hamlet.templateSettings.interpolate, "' + ($1) + '") + 
             replace(/\x11raw(.+?)\x13/g, "' + ($1) + '").
             // note the use of '*'. '+' would be better, but it risks leaving behind \x11 & \x13
-            replace(/\x11(.*?)\x13/g, "' + this.escapeHTML($1) + '")
+            replace(/\x11(.*?)\x13/g, function(_, htmlVar){
+                return (htmlVar == 'content')
+                       ? "' + (" + htmlVar + ") + '"
+                       : "' + this.escapeHTML(" + htmlVar + ") + '"
+              })
             // replace(/\x11(.+?)\x13/g, "'; $1; this.ret += '") +
 
     function mkFunctionBody(string){

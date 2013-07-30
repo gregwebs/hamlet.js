@@ -102,14 +102,22 @@ hamlet('<p>') // "<p></p>"
 There is also a command line program `bin/hamlet.js`. It is not listed in package.json due to some weird install issues.
 Similarly, the dependencies for that program are listed in the devDependencies.
 
+### Meteor
+
+There is an [atmosphere package](https://github.com/maxcan/meteor-hamlet-handlebars).
 
 ### Express
 
 It should work with the '.hamlet' extension.
 
-### Meteor
+## Layouts
 
-There is an [atmosphere package](https://github.com/maxcan/meteor-hamlet-handlebars).
+This uses the filesystem so it only works for nodejs.
+Just add `layout path/to/layout` at the very top of your template.
+
+Since Hamlet is designed for client-heavy usage there are no plans to support partials directly.
+
+You can of course manually create layouts or partials by first rendering an inner template and setting that as a local variable in the outer template.
 
 ## class/id shortcuts
 

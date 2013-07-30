@@ -14,7 +14,7 @@
 , "component": { "scripts": { "hamlet": "hamlet.js" } }
 , "scripts":
     { "test": "npm run test-browser && npm run test-express"
-    , "test-browser": "npm run compile-hamlet && rm -f test.js && coffee -cb test/test.coffee && node test/test.js && echo 'PASS' || echo 'FAIL'"
+    , "test-browser": "npm run compile-hamlet && rm -f test/test.js && coffee -cb test/test.coffee && node test/test.js && echo 'PASS' || echo 'FAIL'"
     , "test-express": "npm run compile && rm -f test/express.js && coffee -cb test/express.coffee && node test/express.js && echo 'PASS' || echo 'FAIL'"
     , "prepublish": "npm prune && npm run build"
     , "build": "npm run compile"
