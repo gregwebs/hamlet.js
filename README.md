@@ -48,9 +48,27 @@ The library currently does not try to pretty print the resulting html, although 
 Note the interpolation `#{var}}`. You can use other interpolation styles by changing the RegExp Hamlet.templateSettings.interpolate.
 You can put any javascript you would like in the interpolation.
 
-## Important: hamlet.js is for client-heavy apps
+## Good error messages
 
-### Warning: there is no conditional html
+Unlike Jade and many other templating options, Hamlet will tell you the line on which a javascript interpolation error occurred in your template. This does make it less powerful: read the next section.
+
+Note that Hamlet will pretty much parse about anything and spit it out as HTML so there aren't parsing syntax errors to deal with. In practice there are very few syntax issues because you already know hamlet: it is just HTML!.
+
+## Important: hamlet.js does not have a construct for conditional html (an if statement)
+
+Think of hamlet.js as your HTML pre-processor, but don't use it by itself to server 100% of your templating needs. hamlet.js works well when paired with something like AngularJS.
+
+Good use cases for hamlet.js
+* server-side (nodejs) usage: a template language for client-heavy apps. hamlet.js is used to stick a few values in server side, but AngularJS is used for most actual logic client-side.
+* client-side usage: client heavy apps that use hamlet.js just as an html pre-processor. A client-side AngularJS template can be written more concisely and safely with hamlet.js. It is first expanded through hamlet.js
+* client-side usage: client light applications that just want to stick a few values into their client-side html, but don't need template logic.
+
+Bad use cases
+* server-side (nodejs) usage: template langauge where all template logic is performed on the server
+* client-side usage: a client-heavy app where all logic is encoded in hamlet.js
+
+
+### interpolation
 
 hamlet.js consists of the core hamlet language interspersed with javascript evaluation via `#{js}`.
 The only thing you can place in the javascript evaluation is something that produces a String.
@@ -59,7 +77,7 @@ There is no way to have an `if` that may include some html if true.
 hamlet.js is designed for client-heavy apps that are using something like AngularJs on the client-side.
 `#{}` is for simple server-side templating, and an angular user can still use `{{}}` for the client-side (although ng-bind is often a better choice)
 
-The reason for the limited js evaluation is that hamlet can recover very good error messages when used on the server side (by evaluating each line of the template one-by-one). Having conditionals (as jade does by default for example) ruins error message reporting because the entire template must be evaluated at once.
+One benefit of the limited js evaluation is that hamlet can recover very good error messages when used on the server side (by evaluating each line of the template one-by-one). Having conditionals (as jade does by default for example) ruins error message reporting because the entire template must be evaluated at once.
 
 ## Overview
 
@@ -114,6 +132,7 @@ It should work with the '.hamlet' extension.
 
 This uses the filesystem so it only works for nodejs.
 Just add `layout path/to/layout` at the very top of your template.
+In your layout file, use the special content variable `#{content}` to include the inner template content.
 
 Since Hamlet is designed for client-heavy usage there are no plans to support partials directly.
 
