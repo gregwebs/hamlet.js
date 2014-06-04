@@ -80,10 +80,10 @@ exports.render = function(str, options, fn){
       options.content = tmpl(options)
       exports.renderFile(m[1], options, fn)
     } else {
-      fn(null, tmpl(options));
+      if (fn) { fn(null, tmpl(options)); } else { return tmpl(options); }
     }
   } catch (err) {
-    fn(err);
+    if (fn) { fn(err); } else { throw err }
   }
 };
 

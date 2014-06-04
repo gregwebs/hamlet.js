@@ -1,6 +1,6 @@
 { "name": "hamlet"
 , "description": "Hamlet template engine"
-, "version": "0.3.0"
+, "version": "0.3.3"
 , "author": "Greg Weber <greg@gregweber.info>"
 , "repository": "git://github.com/gregwebs/hamlet.js"
 , "main": "./hamlet.js"
@@ -22,4 +22,5 @@
     , "compile": "npm run compile-hamlet && cat lib/hamlet.js express.js >> hamlet.js"
     }
 , "browser": { "./lib/hamlet.js": "./lib/hamlet.js" }
+, "main": "hamlet"
 }
