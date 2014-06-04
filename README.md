@@ -205,8 +205,10 @@ Test cases can be ported from the [Haskell Hamlet test suite](http://github.com/
 
 If there are no variables interpreted in your jade, you can compile it down to html
 
-    > jade.compile('test(attr="val") text', {debug:false, compileDebug:false, pretty:true, client:true})()
-    '\n<test a="val">wtf</test>'
+``` js
+> jade.compile('test(attr="val") text', {debug:false, compileDebug:false, pretty:true, client:true})()
+'\n<test a="val">wtf</test>'
+```
 
 TODO: If there are variables, is there a way to set every variable value to `#{variable}` ?
 
@@ -216,10 +218,12 @@ One of the great things about Hamlet is that for a small amount of HTML, you can
 
 There is a Haskell tool `html2hamlet` (install Haskell, then cabal install html2hamlet)
 
-    ❯ echo '\n<test a="val">text</test>' | ./cabal-dev/bin/html2hamlet
-    !!!
-    <test a="val">
-      text
+``` sh
+> echo '\n<test a="val">text</test>' | ./cabal-dev/bin/html2hamlet
+!!!
+<test a="val">
+  text
+```
 
 ## Thanks
 
